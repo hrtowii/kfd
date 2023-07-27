@@ -11,11 +11,6 @@ struct kfdApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onAppear {
-                                    // Get current directory path
-                                    self.path = FileManager.default.currentDirectoryPath
-                                    print(self.path)
-                                }
         }
     }
 }

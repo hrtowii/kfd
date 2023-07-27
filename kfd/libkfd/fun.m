@@ -12,6 +12,23 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <sys/mount.h>
+#import "kfd-Bridging-Header.h"
+#include <sys/stat.h>
+#include <sys/attr.h>
+#include <sys/snapshot.h>
+
+struct hfs_mount_args {
+    char    *fspec;            /* block special device to mount */
+    uid_t    hfs_uid;        /* uid that owns hfs files (standard HFS only) */
+    gid_t    hfs_gid;        /* gid that owns hfs files (standard HFS only) */
+    mode_t    hfs_mask;        /* mask to be applied for hfs perms  (standard HFS only) */
+    u_int32_t hfs_encoding;    /* encoding for this volume (standard HFS only) */
+    struct    timezone hfs_timezone;    /* user time zone info (standard HFS only) */
+    int        flags;            /* mounting flags, see below */
+    int     journal_tbuffer_size;   /* size in bytes of the journal transaction buffer */
+    int        journal_flags;          /* flags to pass to journal_open/create */
+    int        journal_disable;        /* don't use journaling (potentially dangerous) */
+};
 
 uint64_t do_kopen(uint64_t puaf_pages, uint64_t puaf_method, uint64_t kread_method, uint64_t kwrite_method)
 {
@@ -85,10 +102,10 @@ uint64_t getProcByName(u64 kfd, char* nm) {
     uint64_t proc = ((struct kfd*)kfd)->info.kaddr.kernel_proc;
     
     while (true) {
-        uint64_t nameptr = proc + 0x381;//PROC_P_NAME_OFF;
+        uint64_t nameptr = proc + 0x381;//PROC_P_NAME_OFF; probably the problem
         char name[32];
         kread(kfd, nameptr, &name, 32);
-//        printf("[i] pid: %d, process name: %s\n", kread32(kfd, proc + 0x60), name);
+        printf("[i] pid: %d, process name: %s\n", kread32(kfd, proc + 0x60), name);
         if(strcmp(name, nm) == 0) {
             return proc;
         }
@@ -533,10 +550,49 @@ uint64_t funVnodeOverwriteFile(u64 kfd, char* to, char* from) {
     
 //    close(file_index);
     
-    sleep(2);
+    sleep(1);
     
     //mnt_devvp
     kwrite64(kfd, to_v_mount + 0x980, kread64(kfd, from_v_mount + 0x980));
+    //mnt_data
+//    kwrite64(kfd, to_v_mount + 0x8f8, kread64(kfd, from_v_mount + 0x8f8));
+    //mnt_kern_flag
+    kwrite32(kfd, to_v_mount + 0x74, kread32(kfd, from_v_mount + 0x74));
+    //mnt_vfsstat
+    uint64_t from_m_vfsstat = from_v_mount + 0x84;
+    uint64_t to_m_vfsstat = to_v_mount + 0x84;
+    kwrite32(kfd, to_m_vfsstat, kread32(kfd, from_m_vfsstat));
+    kwrite32(kfd, to_m_vfsstat + 0x4, kread32(kfd, from_m_vfsstat + 0x4));
+    kwrite64(kfd, to_m_vfsstat + 0x8, kread32(kfd, from_m_vfsstat + 0x8));
+    kwrite64(kfd, to_m_vfsstat + 0x10, kread32(kfd, from_m_vfsstat + 0x10));
+    kwrite64(kfd, to_m_vfsstat + 0x18, kread32(kfd, from_m_vfsstat + 0x18));
+    kwrite64(kfd, to_m_vfsstat + 0x20, kread32(kfd, from_m_vfsstat + 0x20));
+    kwrite64(kfd, to_m_vfsstat + 0x28, kread32(kfd, from_m_vfsstat + 0x28));
+    kwrite64(kfd, to_m_vfsstat + 0x30, kread32(kfd, from_m_vfsstat + 0x30));
+    
+    //mnt_flag
+    uint32_t from_m_flag = kread32(kfd, from_v_mount + 0x70);
+    uint32_t to_m_flag = kread32(kfd, to_v_mount + 0x70);
+    
+    kwrite64(kfd, to_vnode + 0x20, from_v_mntvnodes_tqe_next);
+    kwrite64(kfd, to_vnode + 0x28, from_v_mntvnodes_tqe_prev);
+    
+#define VISHARDLINK     0x100000
+#define MNT_RDONLY      0x00000001
+    kwrite32(kfd, to_vnode+off_vnode_vflags, kread32(kfd, to_vnode+off_vnode_vflags) & (~(0x1<<6)));
+//    kwrite32(kfd, to_v_mount + 0x70, to_m_flag & (~(0x1<<6)));
+    
+    printf("from_m_flag: 0x%x, to_m_flag: 0x%lx\n", from_m_flag, to_m_flag);
+    
+    
+//    uint32_t* p_bsize = (uint32_t*)((uintptr_t)&vfs + 0);
+//        size_t* p_iosize = (size_t*)((uintptr_t)&vfs + 4);
+//        uint64_t* p_blocks = (uint64_t*)((uintptr_t)&vfs + 8);
+//        uint64_t* p_bfree = (uint64_t*)((uintptr_t)&vfs + 16);
+//        uint64_t* p_bavail = (uint64_t*)((uintptr_t)&vfs + 24);
+//        uint64_t* p_bused = (uint64_t*)((uintptr_t)&vfs + 32);
+//        uint64_t* p_files = (uint64_t*)((uintptr_t)&vfs + 40);
+//        uint64_t* p_ffree = (uint64_t*)((uintptr_t)&vfs + 48);
     
 //    kwrite64(kfd, to_vnode + off_vnode_v_data, 0);
 //    sleep(1);
@@ -577,6 +633,79 @@ uint64_t funVnodeOverwriteFile(u64 kfd, char* to, char* from) {
     return 0;
 }
 
+uint64_t funVnodeRedirectFolder(u64 kfd, char* to, char* from) {
+    //16.1.2 offsets
+    uint32_t off_p_pfd = 0xf8;
+    uint32_t off_fd_ofiles = 0;
+    uint32_t off_fp_fglob = 0x10;
+    uint32_t off_fg_data = 0x38;
+    uint32_t off_vnode_iocount = 0x64;
+    uint32_t off_vnode_usecount = 0x60;
+    uint32_t off_vnode_vflags = 0x54;
+    uint32_t off_vnode_v_mount = 0xd8;
+    uint32_t off_vnode_v_data = 0xe0;
+    uint32_t off_vnode_v_kusecount = 0x5c;
+    uint32_t off_vnode_v_references = 0x5b;
+    uint32_t off_vnode_v_parent = 0xc0;
+    uint32_t off_vnode_v_label = 0xe8;
+    uint32_t off_vnode_v_cred = 0x98;
+    uint32_t off_mount_mnt_fsowner = 0x9c0;
+    uint32_t off_mount_mnt_fsgroup = 0x9c4;
+
+    int file_index = open(to, O_RDONLY);
+    if (file_index == -1) return -1;
+
+    uint64_t proc = getProc(kfd, getpid());
+
+    //get vnode
+    uint64_t filedesc_pac = kread64(kfd, proc + off_p_pfd);
+    uint64_t filedesc = filedesc_pac | 0xffffff8000000000;
+    uint64_t openedfile = kread64(kfd, filedesc + (8 * file_index));
+    uint64_t fileglob_pac = kread64(kfd, openedfile + off_fp_fglob);
+    uint64_t fileglob = fileglob_pac | 0xffffff8000000000;
+    uint64_t vnode_pac = kread64(kfd, fileglob + off_fg_data);
+    uint64_t to_vnode = vnode_pac | 0xffffff8000000000;
+
+    uint8_t to_v_references = kread8(kfd, to_vnode + off_vnode_v_references);
+    uint32_t to_usecount = kread32(kfd, to_vnode + off_vnode_usecount);
+    uint32_t to_v_kusecount = kread32(kfd, to_vnode + off_vnode_v_kusecount);
+
+    close(file_index);
+
+    file_index = open(from, O_RDONLY);
+    if (file_index == -1) return -1;
+
+    filedesc_pac = kread64(kfd, proc + off_p_pfd);
+    filedesc = filedesc_pac | 0xffffff8000000000;
+    openedfile = kread64(kfd, filedesc + (8 * file_index));
+    fileglob_pac = kread64(kfd, openedfile + off_fp_fglob);
+    fileglob = fileglob_pac | 0xffffff8000000000;
+    vnode_pac = kread64(kfd, fileglob + off_fg_data);
+    uint64_t from_vnode = vnode_pac | 0xffffff8000000000;
+    uint64_t from_v_data = kread64(kfd, from_vnode + off_vnode_v_data);
+
+    close(file_index);
+
+    kwrite32(kfd, to_vnode + off_vnode_usecount, to_usecount + 1);
+    kwrite32(kfd, to_vnode + off_vnode_v_kusecount, to_v_kusecount + 1);
+    kwrite8(kfd, to_vnode + off_vnode_v_references, to_v_references + 1);
+    kwrite64(kfd, to_vnode + off_vnode_v_data, from_v_data);
+
+    return 0;
+}
+
+//TODO: Redirect /System/Library/PrivateFrameworks/TCC.framework/Support/ -> NSHomeDirectory(), @"/Documents/mounted"
+//Current: Redirect /var -> NSHomeDirectory(), @"/Documents/mounted"
+void ls(u64 kfd, id path) {
+//    NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), path];
+    NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted"];
+    [[NSFileManager defaultManager] removeItemAtPath:mntPath error:nil];
+    [[NSFileManager defaultManager] createDirectoryAtPath:mntPath withIntermediateDirectories:NO attributes:nil error:nil];
+    funVnodeRedirectFolder(kfd, mntPath.UTF8String, "/"); // redirect root from the mount path?
+    NSArray* dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath error:NULL];
+    NSLog(@"/var directory: %@", dirs);
+}
+
 int do_fun(u64 kfd) {
     uint64_t kslide = ((struct kfd*)kfd)->perf.kernel_slide;
     uint64_t kbase = 0xfffffff007004000 + kslide;
@@ -591,28 +720,30 @@ int do_fun(u64 kfd) {
     
     funUcred(kfd, selfProc);
     funProc(kfd, selfProc);
-    funVnodeHide(kfd, "/System/Library/Audio/UISounds/photoShutter.caf");
+//    funVnodeHide(kfd, "/System/Library/Audio/UISounds/photoShutter.caf");
+    print("hiding home bar\n");
     funVnodeHide(kfd, "/System/Library/PrivateFrameworks/MaterialKit.framework/Assets.car");
-//    funVnodeOverwrite(kfd, "/System/Library/AppPlaceholders/Stocks.app/AppIcon60x60@2x.png", "/System/Library/AppPlaceholders/Tips.app/AppIcon60x60@2x.png"); // replace from x to x
+//    funVnodeOverwrite(kfd, "/System/Library/AppPlaceholders/Stocks.app/AppIcon60x60@2x.png", "/System/Library/AppPlaceholders/Tips.app/AppIcon60x60@2x.png"); // replace destination from targeted
 //    funCSFlags(kfd, "launchd");
 //    funTask(kfd, "kfd");
     
-    print("[i] chowning tccd to user NOW\n\n");
-    //Patch
-    funVnodeChown(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 501, 501);
-    
-    print("[i] chowning tccd to root NOW\n\n");
-    //Restore
-    funVnodeChown(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 0, 0);
+//    print("[i] chowning tccd to user NOW\n\n");
+//    //Patch
+//    funVnodeChown(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 501, 501);
+//
+//    print("[i] chowning tccd to root NOW\n\n");
+//    //Restore
+//    funVnodeChown(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 0, 0);
+//
+//    print("[i] chmodding tccd to 777 NOW\n\n");
+//    //Patch
+//    funVnodeChmod(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 0107777);
+//
+//    print("[i] chmodding tccd to 755 NOW\n\n");
+//    //Restore
+//    funVnodeChmod(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 0100755);
 
-    print("[i] chmodding tccd to 777 NOW\n\n");
-    //Patch
-    funVnodeChmod(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 0107777);
-    
-    print("[i] chmodding tccd to 755 NOW\n\n");
-    //Restore
-    funVnodeChmod(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 0100755);
-
+    ls(kfd, @"\"@/Documents/mounted\"");
     //    NSString *AAAApath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/AAAA.bin"];
     //    remove(AAAApath.UTF8String);
     //    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/AAAA.bin"] toPath:AAAApath error:nil];
@@ -621,11 +752,6 @@ int do_fun(u64 kfd) {
     //    remove(BBBBpath.UTF8String);
     //    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/AAAA.bin"] toPath:BBBBpath error:nil];
         
-        NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted"];
-        
-//        NSString *mntPath = [NSString stringWithFormat:@"/"];
-        [[NSFileManager defaultManager] removeItemAtPath:mntPath error:nil];
-        [[NSFileManager defaultManager] createDirectoryAtPath:mntPath withIntermediateDirectories:NO attributes:nil error:nil];
         
     //    funVnodeOverwriteFile(kfd, mntPath.UTF8String, "/var/mobile/Library/Caches/com.apple.keyboards");
     //    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/AAAA.bin"] toPath:[NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted/images/BBBB.bin"] error:nil];
@@ -635,10 +761,7 @@ int do_fun(u64 kfd) {
     //    printf("mount ret: %d\n", mount("apfs", mntpath, 0, &mntargs))
     //    funVnodeChown(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/", 501, 501);
     //    funVnodeChmod(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/", 0107777);
-        funVnodeOverwriteFile(kfd, mntPath.UTF8String, "/");
-        NSArray* dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath
-                                                                            error:NULL];
-        NSLog(@"/var directory: %@", dirs);
+
 
     //    funVnodeOverwriteFile(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", AAAApath.UTF8String);
     //    funVnodeChown(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 501, 501);
@@ -656,7 +779,23 @@ int do_fun(u64 kfd) {
     //    funVnodeOverwrite(kfd, AAAApath.UTF8String, AAAApath.UTF8String);
         
     //    funVnodeOverwrite(kfd, selfProc, "/System/Library/AppPlaceholders/Stocks.app/AppIcon60x60@2x.png", copyToAppDocs.UTF8String);
+    
+    funVnodeOverwriteFile(kfd, "/System/Library/Audio/UISounds/lock.caf", "/System/Library/Audio/UISounds/connect_power.caf");
+    
+    funVnodeOverwriteFile(kfd, "/System/Library/Audio/UISounds/key_press_click.caf", "/System/Library/Audio/UISounds/lock.caf");
+    
+    funVnodeOverwriteFile(kfd, "/System/Library/Audio/UISounds/lock.caf", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/vineboom.caf");
+    
+    funVnodeOverwriteFile(kfd, "/System/Library/PrivateFrameworks/FocusUI.framework/dnd_cg_02.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/focusmain.caml");
+    
+    funVnodeOverwriteFile(kfd, "/System/Library/ControlCenter/Bundles/LowPowerModule.bundle/LowPower.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/lpmmain.caml");
+    
+    funVnodeOverwriteFile(kfd, "/System/Library/PrivateFrameworks/MediaControls.framework/Volume.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/mainvolume.caml");
+    
+    funVnodeOverwriteFile(kfd, "/System/Library/ControlCenter/Bundles/ConnectivityModule.bundle/Bluetooth.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/mainbluetooth.caml");
 
+    
+    funVnodeOverwriteFile(kfd, "/System/Library/Audio/UISounds/photoShutter.caf", "/System/Library/Audio/UISounds/lock.caf"); // DC4597C3-66C4-4717-BC0F-CE9E3937F490
 
     //Overwrite tccd:
     //    NSString *copyToAppDocs = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/tccd_patched.bin"];
@@ -668,7 +807,18 @@ int do_fun(u64 kfd) {
     //    xpc_crasher("com.apple.tccd");
     //    xpc_crasher("com.apple.tccd");
 
-
+//    func overwriteBlacklist() -> Bool {
+//        return overwriteFileWithDataImpl(originPath: "/private/var/db/MobileIdentityData/Rejections.plist", replacementData: try! Data(base64Encoded: blankplist)!)
+//    }
+//
+//    func overwriteBannedApps() -> Bool {
+//        return overwriteFileWithDataImpl(originPath: "/private/var/db/MobileIdentityData/AuthListBannedUpps.plist", replacementData: try! Data(base64Encoded: blankplist)!)
+//    }
+//
+//    func overwriteCdHashes() -> Bool {
+//        return overwriteFileWithDataImpl(originPath: "/private/var/db/MobileIdentityData/AuthListBannedCdHashes.plist", replacementData: try! Data(base64Encoded: blankplist)!)
+//    } let blankplist = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCFET0NUWVBFIHBsaXN0IFBVQkxJQyAiLS8vQXBwbGUvL0RURCBQTElTVCAxLjAvL0VOIiAiaHR0cDovL3d3dy5hcHBsZS5jb20vRFREcy9Qcm9wZXJ0eUxpc3QtMS4wLmR0ZCI+CjxwbGlzdCB2ZXJzaW9uPSIxLjAiPgo8ZGljdC8+CjwvcGxpc3Q+Cg=="
+    print("done!!!\n");
     return 0;
 }
 
