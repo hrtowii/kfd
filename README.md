@@ -1,10 +1,5 @@
 # kfd
 
-# kfd fork
-This kfd fork merges the kern-info branch of the original kfd project together with white4ever's fork of kfd which implements vnodebypass [here](https://github.com/wh1te4ever/kfd). Do note that offsets for this in dynamic_info.h are only for iOS 16.6 beta 1, iPhone 14 Pro.
-
-Issues: getProcByName panics the device (presumably due to an offset error)
-
 kfd, short for kernel file descriptor, is a project to read and write kernel memory on Apple
 devices. It leverages various vulnerabilities that can be exploited to obtain dangling PTEs, which
 will be referred to as a PUAF primitive, short for "physical use-after-free". Then, it reallocates
