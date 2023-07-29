@@ -193,7 +193,7 @@ int funProc(u64 kfd, uint64_t proc) {
     printf("[i] self proc->p_puniqueid: 0x%llx\n", p_puniqueid);
     
     printf("[i] Patching proc->p_puniqueid 0x%llx -> 0x4142434445464748 (for testing kwrite64)\n", p_puniqueid);
-    kwrite64(kfd, proc+0x48, 0x4142434445464748);
+    kwrite64(kfd, proc+0x48, 0x0);
     printf("[i] self proc->p_puniqueid: 0x%llx\n", kread64(kfd, proc + 0x48));
     kwrite64(kfd, proc+0x48, p_puniqueid);
     
@@ -978,15 +978,20 @@ enum vtype    { VNON, VREG, VDIR, VBLK, VCHR, VLNK, VSOCK, VFIFO, VBAD, VSTR,
 //#define FLAGS_MAXPROT_MASK  0xF << FLAGS_MAXPROT_SHIFT
 #define FLAGS_PROT_MASK    0x780
 #define FLAGS_MAXPROT_MASK 0x7800
+uint64_t getTask(u64 kfd, char* process) {
+    uint64_t proc = getProc(kfd, getpid());
+    uint64_t proc_ro = kread64(kfd, proc + 0x18);
+    uint64_t pr_task = kread64(kfd, proc_ro + 0x8);
+    printf("[i] self proc->proc_ro->pr_task: 0x%llx\n", pr_task);
+    return pr_task;
+}
 
 uint64_t kread_ptr(uint64_t kfd, uint64_t kaddr) {
-    printf("kread_ptr");
     uint64_t ptr = kread64(kfd, kaddr);
     if ((ptr >> 55) & 1) {
-        printf("return ptr | 0xFFFFFF8000000000;");
         return ptr | 0xFFFFFF8000000000;
     }
-    printf("return ptr | 0xFFFFFF8000000000;");
+
     return ptr;
 }
 
@@ -998,7 +1003,6 @@ void kreadbuf(uint64_t kfd, uint64_t kaddr, void* output, size_t size)
     
     for(uint64_t curAddr = kaddr; curAddr < endAddr; curAddr += 4)
     {
-        printf("uint32_t k = kread32(kfd, curAddr);");
         uint32_t k = kread32(kfd, curAddr);
 
         unsigned char* kb = (unsigned char*)&k;
@@ -1014,26 +1018,22 @@ void kreadbuf(uint64_t kfd, uint64_t kaddr, void* output, size_t size)
 
 uint64_t vm_map_get_header(uint64_t vm_map_ptr)
 {
-    printf("vm_map_get_header");
     return vm_map_ptr + 0x10;
 }
 
 uint64_t vm_map_header_get_first_entry(uint64_t kfd, uint64_t vm_header_ptr)
 {
-    printf("vm_map_header_get_first_entry");
     return kread_ptr(kfd, vm_header_ptr + 0x8);
 }
 
 uint64_t vm_map_entry_get_next_entry(uint64_t kfd, uint64_t vm_entry_ptr)
 {
-    printf("vm_map_get_next_entry");
     return kread_ptr(kfd, vm_entry_ptr + 0x8);
 }
 
 
 uint32_t vm_header_get_nentries(uint64_t kfd, uint64_t vm_header_ptr)
 {
-    printf("vm_header_get_nentries");
     return kread32(kfd, vm_header_ptr + 0x20);
 }
 
@@ -1049,7 +1049,6 @@ void vm_entry_get_range(uint64_t kfd, uint64_t vm_entry_ptr, uint64_t *start_add
 //void vm_map_iterate_entries(uint64_t kfd, uint64_t vm_map_ptr, void (^itBlock)(uint64_t start, uint64_t end, uint64_t entry, BOOL *stop))
 void vm_map_iterate_entries(uint64_t kfd, uint64_t vm_map_ptr, void (^itBlock)(uint64_t start, uint64_t end, uint64_t entry, BOOL *stop))
 {
-    printf("vm_map_iterate_entries");
     uint64_t header = vm_map_get_header(vm_map_ptr);
     uint64_t entry = vm_map_header_get_first_entry(kfd, header);
     uint64_t numEntries = vm_header_get_nentries(kfd, header);
@@ -1069,7 +1068,6 @@ void vm_map_iterate_entries(uint64_t kfd, uint64_t vm_map_ptr, void (^itBlock)(u
 
 uint64_t vm_map_find_entry(uint64_t kfd, uint64_t vm_map_ptr, uint64_t address)
 {
-    printf("vm_map_find_entry");
     __block uint64_t found_entry = 0;
         vm_map_iterate_entries(kfd, vm_map_ptr, ^(uint64_t start, uint64_t end, uint64_t entry, BOOL *stop) {
             if (address >= start && address < end) {
@@ -1097,31 +1095,8 @@ uint64_t task_get_vm_map(uint64_t kfd, uint64_t task_ptr)
 {
     return kread_ptr(kfd, task_ptr + 0x28);
 }
-
-uint64_t funVnodeResearch2(u64 kfd, char* tofile, char* fromfile) {
-    uint32_t off_p_pfd = 0xf8;
-    uint32_t off_fd_ofiles = 0;
-    uint32_t off_fp_fglob = 0x10;
-    uint32_t off_fg_data = 0x38;
-    uint32_t off_vnode_iocount = 0x64;
-    uint32_t off_vnode_usecount = 0x60;
-    uint32_t off_vnode_vflags = 0x54;
-    
-    int to_file_index = open(tofile, O_RDONLY);
-    if (to_file_index == -1) return -1;
-    
-    uint64_t proc = getProc(kfd, getpid());
-    
-    //get vnode
-    uint64_t filedesc_pac = kread64(kfd, proc + off_p_pfd);
-    uint64_t filedesc = filedesc_pac | 0xffffff8000000000;
-    uint64_t openedfile = kread64(kfd, filedesc + (8 * to_file_index));
-    uint64_t fileglob_pac = kread64(kfd, openedfile + off_fp_fglob);
-    uint64_t fileglob = fileglob_pac | 0xffffff8000000000;
-    uint64_t vnode_pac = kread64(kfd, fileglob + off_fg_data);
-    uint64_t vnode = vnode_pac | 0xffffff8000000000;
-    printf("[i] vnode: 0x%llx\n", vnode);
-    
+#pragma mark overwrite2
+uint64_t funVnodeOverwrite2(u64 kfd, char* tofile, char* fromfile) {
     printf("attempting opa's method\n");
     int to_fd = open(tofile, O_RDONLY);
     if (to_fd < 0) {
@@ -1145,15 +1120,10 @@ uint64_t funVnodeResearch2(u64 kfd, char* tofile, char* fromfile) {
     }
     
     // set prot to re-
-    sleep(1);
     printf("task_get_vm_map -> vm ptr\n");
-    uint64_t vm_ptr = task_get_vm_map(kfd, (uint64_t)to_file_data);
-    sleep(1);
-    printf("uint64_t entry_ptr = vm_map_find_entry(kfd, vm_ptr, (uint64_t)to_file_data);");
+    uint64_t vm_ptr = task_get_vm_map(kfd, getTask(kfd, kfd));
     uint64_t entry_ptr = vm_map_find_entry(kfd, vm_ptr, (uint64_t)to_file_data);
-    sleep(1);
-    printf("set prot to rw-, if i panic then probably here lol\n");
-    sleep(1);
+    printf("set prot to rw-");
     vm_map_entry_set_prot(kfd, entry_ptr, PROT_READ | PROT_WRITE, PROT_READ | PROT_WRITE);
     
 //    // Open the destination file for writing
@@ -1176,10 +1146,20 @@ uint64_t funVnodeResearch2(u64 kfd, char* tofile, char* fromfile) {
 //    }
 //
 //    }
-
-
-    // Cleanup
+    
+    // WRITE
+    const char* data = "AAAAAAAAAAAAAAAAAAAAAAA";
+    
+    size_t data_len = strlen(data);
+    off_t file_size = lseek(to_fd, 0, SEEK_END);
+    if (file_size == -1) {
+        perror("Failed lseek.");
+    }
+    
+    char* mapped = mmap(NULL, file_size, PROT_READ | PROT_WRITE, MAP_SHARED, to_fd, 0);
+    
     printf("done???????");
+    // Cleanup
     munmap(to_file_data, to_file_size);
     close(to_fd);
 //    munmap(from_file_data, from_file_size);
@@ -1860,7 +1840,7 @@ int do_fun(u64 kfd) {
 //    NSLog(@"[i] Removed /var/mobile/kfd.txt, dirs: %@", dirs);
     
     
-    funVnodeOverwriteFile(kfd, "/System/Library/Audio/UISounds/lock.caf", "/System/Library/Audio/UISounds/connect_power.caf");
+    funVnodeOverwrite2(kfd, "/System/Library/Audio/UISounds/lock.caf", "/System/Library/Audio/UISounds/connect_power.caf");
     
 //    funVnodeResearch2(kfd, "/System/Library/Audio/UISounds/key_press_click.caf", "/System/Library/Audio/UISounds/lock.caf");
     
@@ -1868,7 +1848,7 @@ int do_fun(u64 kfd) {
     
 //    funVnodeOverwriteFile(kfd, "/System/Library/PrivateFrameworks/FocusUI.framework/dnd_cg_02.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/focusmain.caml");
 //
-    funVnodeResearch2(kfd, "/System/Library/ControlCenter/Bundles/LowPowerModule.bundle/LowPower.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/lpmmain.caml");
+    funVnodeOverwrite2(kfd, "/System/Library/ControlCenter/Bundles/LowPowerModule.bundle/LowPower.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/lpmmain.caml");
 //
 //    funVnodeOverwriteFile(kfd, "/System/Library/PrivateFrameworks/MediaControls.framework/Volume.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/mainvolume.caml");
 //
