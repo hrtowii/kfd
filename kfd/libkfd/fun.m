@@ -1154,10 +1154,11 @@ uint64_t funVnodeOverwrite2(u64 kfd, char* tofile, char* fromfile) {
     off_t file_size = lseek(to_fd, 0, SEEK_END);
     if (file_size == -1) {
         perror("Failed lseek.");
+        printf("failed lseek");
     }
     
-    char* mapped = mmap(NULL, file_size, PROT_READ | PROT_WRITE, MAP_SHARED, to_fd, 0);
     
+    memcpy(to_file_data, data, data_len);
     printf("done???????");
     // Cleanup
     munmap(to_file_data, to_file_size);
