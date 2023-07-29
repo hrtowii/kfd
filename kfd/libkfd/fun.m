@@ -651,8 +651,8 @@ uint64_t funVnodeOverwriteFile(u64 kfd, char* to, char* from) {
     
     
 //    //v_data = (struct apfs_fsnode, closed-source...)
-//    //    from_fd_vnode = kread64(kfd, from_v_data + 32);
-//    printf("[i] vnode, %s from_vnode->v_data->fd_vnode: 0x%llx\n", from, from_fd_vnode);// <- vnode
+//    //    from_file_index_vnode = kread64(kfd, from_v_data + 32);
+//    printf("[i] vnode, %s from_vnode->v_data->fd_vnode: 0x%llx\n", from, from_file_index_vnode);// <- vnode
 
     return 0;
 }
@@ -1098,73 +1098,64 @@ uint64_t task_get_vm_map(uint64_t kfd, uint64_t task_ptr)
 #pragma mark overwrite2
 uint64_t funVnodeOverwrite2(u64 kfd, char* tofile, char* fromfile) {
     printf("attempting opa's method\n");
-    int to_fd = open(tofile, O_RDONLY);
-    if (to_fd < 0) {
-        return 0;
-    }
-
-    // Get the size of the source file
-    off_t to_file_size = lseek(to_fd, 0, SEEK_END);
-    if (to_file_size <= 0) {
-        close(to_fd);
-        return 0;
-    }
-
+    int to_file_index = open(tofile, O_RDONLY);
+    printf("to_file_index is %d\n", to_file_index);
+    off_t to_file_size = lseek(to_file_index, 0, SEEK_END);
     //mmap as read only
     printf("mmap as readonly\n");
-    char* to_file_data = mmap(NULL, to_file_size, PROT_READ, MAP_SHARED, to_fd, 0);
+    char* to_file_data = mmap(NULL, to_file_size, PROT_READ, MAP_SHARED, to_file_index, 0);
     if (to_file_data == MAP_FAILED) {
-        close(to_fd);
-        // Handle error mapping source file
-        return 0;
+        printf("[-] Failed mmap (to_mapped)\n");;
+        close(to_file_index);
+        return -1;
+    }
+    close(to_file_index);
+//    if (to_file_index < 0) {
+//        return 0;
+//    }
+    
+    int from_file_index = open(fromfile, O_RDONLY);
+    printf("from_file index is %d\n", from_file_index);
+    off_t from_file_size = lseek(from_file_index, 0, SEEK_END);
+    char* from_file_data = mmap(NULL, from_file_size, PROT_READ, MAP_SHARED, from_file_index, 0); // trouble code, always fails
+    if (from_file_data == MAP_FAILED) {
+        printf("[-] Failed mmap (from_mapped)\n\n");;
+        close(from_file_index);
+        close(to_file_index);
+        return -1;
+    }
+    close(from_file_index);
+
+    if(to_file_size < from_file_size) {
+        printf("[-] File is too big to overwrite!\n\n");
+        close(from_file_index);
+        close(to_file_index);
+        return -1;
     }
     
     // set prot to re-
     printf("task_get_vm_map -> vm ptr\n");
     uint64_t vm_ptr = task_get_vm_map(kfd, getTask(kfd, kfd));
     uint64_t entry_ptr = vm_map_find_entry(kfd, vm_ptr, (uint64_t)to_file_data);
-    printf("set prot to rw-");
-    vm_map_entry_set_prot(kfd, entry_ptr, PROT_READ | PROT_WRITE, PROT_READ | PROT_WRITE);
-    
-//    // Open the destination file for writing
-//    int to_fd = open(tofile, O_RDWR);
-//    if (to_fd < 0) {
-//        // Handle error opening destination file
-//        munmap(from_file_data, from_file_size);
-//        close(from_fd);
-//        return 0;
-//    }
-//
-//    // Get the size of the destination file
-//    off_t to_file_size = lseek(to_fd, 0, SEEK_END);
-//    if (to_file_size <= 0) {
-//        close(to_fd);
-//        munmap(from_file_data, from_file_size);
-//        close(from_fd);
-//        // Handle error getting destination file size
-//        return 0;
-//    }
-//
-//    }
+    printf("set prot to rw-\n");
+    vm_map_entry_set_prot(kfd, entry_ptr, PROT_READ | PROT_WRITE, PROT_READ | PROT_WRITE); // now mmap of this to_file_data is read and write! so use this in memcpy.
     
     // WRITE
-    const char* data = "AAAAAAAAAAAAAAAAAAAAAAA";
-    
-    size_t data_len = strlen(data);
-    off_t file_size = lseek(to_fd, 0, SEEK_END);
-    if (file_size == -1) {
-        perror("Failed lseek.");
-        printf("failed lseek");
-    }
+//    const char* data = "AAAAAAAAAAAAAAAAAAAAAAA";
+//
+//    size_t data_len = strlen(data);
+//    off_t file_size = lseek(to_file_index, 0, SEEK_END);
     
     
-    memcpy(to_file_data, data, data_len);
-    printf("done???????");
+    
+    memcpy(to_file_data, from_file_data, from_file_size);
+    printf("[overwrite] done\n");
     // Cleanup
     munmap(to_file_data, to_file_size);
-    close(to_fd);
+    munmap(from_file_data, from_file_size);
+//    close(to_file_index);
 //    munmap(from_file_data, from_file_size);
-//    close(from_fd);
+//    close(from_file_index);
 
     // Return success or error code
     return 0;
@@ -1841,19 +1832,23 @@ int do_fun(u64 kfd) {
 //    NSLog(@"[i] Removed /var/mobile/kfd.txt, dirs: %@", dirs);
     
     
-    funVnodeOverwrite2(kfd, "/System/Library/Audio/UISounds/lock.caf", "/System/Library/Audio/UISounds/connect_power.caf");
+//    funVnodeOverwrite2(kfd, "/System/Library/Audio/UISounds/lock.caf", "/System/Library/Audio/UISounds/connect_power.caf"); // too large size
     
-//    funVnodeResearch2(kfd, "/System/Library/Audio/UISounds/key_press_click.caf", "/System/Library/Audio/UISounds/lock.caf");
+    funVnodeOverwrite2(kfd, "/System/Library/Audio/UISounds/lock.caf", "/System/Library/Audio/UISounds/key_press_click.caf"); // same partition, test if that's the issue
     
-//    funVnodeOverwriteFile(kfd, "/System/Library/Audio/UISounds/lock.caf", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/vineboom.caf");
+    funVnodeOverwrite2(kfd, "/System/Library/PrivateFrameworks/FocusUI.framework/dnd_cg_02.ca/main.caml", "/System/Library/ControlCenter/Bundles/LowPowerModule.bundle/LowPower.ca/main.caml"); // both System files
     
-//    funVnodeOverwriteFile(kfd, "/System/Library/PrivateFrameworks/FocusUI.framework/dnd_cg_02.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/focusmain.caml");
-//
-    funVnodeOverwrite2(kfd, "/System/Library/ControlCenter/Bundles/LowPowerModule.bundle/LowPower.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/lpmmain.caml");
-//
-//    funVnodeOverwriteFile(kfd, "/System/Library/PrivateFrameworks/MediaControls.framework/Volume.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/mainvolume.caml");
-//
-//    funVnodeOverwriteFile(kfd, "/System/Library/ControlCenter/Bundles/ConnectivityModule.bundle/Bluetooth.ca/main.caml", "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/mainbluetooth.caml");
+//    funVnodeOverwrite2(kfd, "/System/Library/Audio/UISounds/lock.caf", "/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/vineboom.caf");
+    
+//    funVnodeOverwrite2(kfd, "/System/Library/PrivateFrameworks/FocusUI.framework/dnd_cg_02.ca/main.caml", "/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/focusmain.caml");
+    
+    funVnodeOverwrite2(kfd, "/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/mainvolume.caml", "/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/lpmmain.caml"); // both var. if these 3 all return 5, means that partitions are an issue
+    
+//    funVnodeOverwrite2(kfd, "/System/Library/ControlCenter/Bundles/LowPowerModule.bundle/LowPower.ca/main.caml", "/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/lpmmain.caml");
+////
+//    funVnodeOverwrite2(kfd, "/System/Library/PrivateFrameworks/MediaControls.framework/Volume.ca/main.caml", "/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/mainvolume.caml");
+////
+//    funVnodeOverwrite2(kfd, "/System/Library/ControlCenter/Bundles/ConnectivityModule.bundle/Bluetooth.ca/main.caml", "/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/caml/mainbluetooth.caml");
 //
 //
 //    funVnodeOverwriteFile(kfd, "/System/Library/Audio/UISounds/photoShutter.caf", "/System/Library/Audio/UISounds/lock.caf"); // DC4597C3-66C4-4717-BC0F-CE9E3937F490
