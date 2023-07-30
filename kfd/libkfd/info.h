@@ -48,6 +48,7 @@
 #include "info/dynamic_types/uthread.h"
 #include "info/dynamic_types/vm_map.h"
 #include "info/dynamic_types/IOSurface.h"
+#include "info/dynamic_types/IOSurface.h"
 
 /*
  * Helper macros for static types.
@@ -228,7 +229,12 @@ void info_init(struct kfd* kfd)
 
     
 
-    assert_false("unsupported osversion");
+    print_i32(kfd->info.env.pid);
+    print_u64(kfd->info.env.tid);
+    print_u64(kfd->info.env.vid);
+    print_bool(kfd->info.env.ios);
+    print_string(kfd->info.env.osversion);
+    print_u64(kfd->info.env.maxfilesperproc);
 }
 
 void info_run(struct kfd* kfd)

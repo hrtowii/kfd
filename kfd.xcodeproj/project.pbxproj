@@ -56,6 +56,8 @@
 		C8CB751B2A7EA18000305C68 /* grant_full_disk_access.m in Sources */ = {isa = PBXBuildFile; fileRef = C8CB75112A7EA18000305C68 /* grant_full_disk_access.m */; };
 		C8CB751C2A7EA18000305C68 /* proc.c in Sources */ = {isa = PBXBuildFile; fileRef = C8CB75132A7EA18000305C68 /* proc.c */; };
 		C8EAC7D02A769098005FB878 /* SwiftUtils in Frameworks */ = {isa = PBXBuildFile; productRef = C8843C222A724AA900CA0DC9 /* SwiftUtils */; };
+		8C0AF3552A75B6340065C9DD /* intermediate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C0AF3542A75B6340065C9DD /* intermediate.m */; };
+		8C0AF3582A75B6BF0065C9DD /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C0AF3572A75B6BF0065C9DD /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -140,6 +142,13 @@
 		8C0AF3572A75B6BF0065C9DD /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = DEVELOPER_DIR; };
 		8CC7F5312A762D46004C6F30 /* kwrite_IOSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kwrite_IOSurface.h; sourceTree = "<group>"; };
 		8CC7F5322A765BED004C6F30 /* IOSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOSurface.h; sourceTree = "<group>"; };
+		8C0AF3512A75B21A0065C9DD /* kread_IOSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kread_IOSurface.h; sourceTree = "<group>"; };
+		8C0AF3522A75B2DA0065C9DD /* IOSurface_shared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOSurface_shared.h; sourceTree = "<group>"; };
+		8C0AF3532A75B6340065C9DD /* intermediate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = intermediate.h; sourceTree = "<group>"; };
+		8C0AF3542A75B6340065C9DD /* intermediate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = intermediate.m; sourceTree = "<group>"; };
+		8C0AF3572A75B6BF0065C9DD /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = DEVELOPER_DIR; };
+		8CC7F5312A762D46004C6F30 /* kwrite_IOSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kwrite_IOSurface.h; sourceTree = "<group>"; };
+		8CC7F5322A765BED004C6F30 /* IOSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOSurface.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +157,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C8EAC7D02A769098005FB878 /* SwiftUtils in Frameworks */,
+				8C0AF3582A75B6BF0065C9DD /* IOKit.framework in Frameworks */,
 				8C0AF3582A75B6BF0065C9DD /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -490,6 +500,7 @@
 				C8CB75192A7EA18000305C68 /* vnode.m in Sources */,
 				C8CB75162A7EA18000305C68 /* helpers.m in Sources */,
 				C8CB751C2A7EA18000305C68 /* proc.c in Sources */,
+				8C0AF3552A75B6340065C9DD /* intermediate.m in Sources */,
 				8C0AF3552A75B6340065C9DD /* intermediate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
