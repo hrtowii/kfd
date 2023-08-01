@@ -94,11 +94,11 @@ void kread_sem_open_kread(struct kfd* kfd, u64 kaddr, void* uaddr, u64 size)
 
 void kread_sem_open_find_proc(struct kfd* kfd)
 {
-    u64 pseminfo_kaddr = ((volatile struct psemnode*)(kfd->kread.krkw_object_uaddr))->pinfo;
-    u64 semaphore_kaddr = kget_u64(pseminfo__psem_semobject, pseminfo_kaddr);
-    u64 task_kaddr = kget_u64(semaphore__owner, semaphore_kaddr);
-    u64 proc_kaddr = task_kaddr - kfd_offset(proc__object_size);
-    kfd->info.kaddr.kernel_proc = proc_kaddr;
+    u64 pseminfo_kaddr = static_uget(psemnode, pinfo, kfd->kread.krkw_object_uaddr);
+    u64 semaphore_kaddr = static_kget(pseminfo, u64, psem_semobject, pseminfo_kaddr);
+    u64 task_kaddr = static_kget(semaphore, u64, owner, semaphore_kaddr);
+    u64 proc_kaddr = task_kaddr - dynamic_sizeof(proc);
+    kfd->info.kernel.kernel_proc = proc_kaddr;
 
     /*
      * Go backwards from the kernel_proc, which is the last proc in the list.
@@ -106,7 +106,7 @@ void kread_sem_open_find_proc(struct kfd* kfd)
     while (true) {
         i32 pid = kget_u64(proc__p_pid, proc_kaddr);
         if (pid == kfd->info.env.pid) {
-            kfd->info.kaddr.current_proc = proc_kaddr;
+            kfd->info.kernel.current_proc = proc_kaddr;
             break;
         }
 
