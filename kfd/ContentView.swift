@@ -183,6 +183,13 @@ struct ContentView: View {
                     }
                     .buttonStyle(BorderlessButtonStyle())
                 }
+                Section {
+                    HStack {
+                        Button("stage2") {
+                            stage2(kfd)
+                        }.disabled(kfd == 0).frame(minWidth: 0, maxWidth: .infinity)
+                    }
+                }.listRowBackground(Color.clear)
                 
             }
             .navigationBarTitle("kfdtweaks", displayMode: .inline)
