@@ -253,54 +253,87 @@ int regionChanger(NSString *country_value, NSString *region_value) {
     return 0;
 }
 
-int listCache(void) {
+int themePasscodes(void) {
     NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted"];
-    
     uint64_t var_tmp_vnode = getVnodeAtPathByChdir("/var/tmp");
-
+    
+//    for(NSString *dir in dirs) {
+//        NSString *path = [NSString stringWithFormat:@"%@/%@", mntPath, dir];
+//        [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+//    }
+    
     printf("[i] /var/tmp vnode: 0x%llx\n", var_tmp_vnode);
-    // symlink documents folder to var/tmp
+    // symlink documents folder to /var/tmp, then copy all our images there
     uint64_t orig_to_v_data = createFolderAndRedirect(var_tmp_vnode, mntPath);
     
     NSError *error;
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/1.png"] toPath:[mntPath stringByAppendingString:@"/en-1---white.png"] error:&error];
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/2.png"] toPath:[mntPath stringByAppendingString:@"/en-2-A B C--white.png"] error:&error];
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/3.png"] toPath:[mntPath stringByAppendingString:@"/en-3-D E F--white.png"] error:&error];
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/4.png"] toPath:[mntPath stringByAppendingString:@"/en-4-G H I--white.png"] error:&error];
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/5.png"] toPath:[mntPath stringByAppendingString:@"/en-5-J K L--white.png"] error:&error];
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/6.png"] toPath:[mntPath stringByAppendingString:@"/en-6-M N O--white.png"] error:&error];
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/7.png"] toPath:[mntPath stringByAppendingString:@"/en-7-P Q R S--white.png"] error:&error];
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/8.png"] toPath:[mntPath stringByAppendingString:@"/en-8-T U V--white.png"] error:&error];
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/9.png"] toPath:[mntPath stringByAppendingString:@"/en-9-W X Y Z--white.png"] error:&error];
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/other-0-+--white.png.png"] toPath:[mntPath stringByAppendingString:@"/en-0---white.png"] error:&error];
+    
+    // create a file picker and let users choose the image, add them to your documents or whatever, then do this.
+    
+    // the topath name can be anything but i'm making them the same for easy copy paste
+    
+    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Quantum.png"] toPath:[mntPath stringByAppendingString:@"/en-0---white.png"] error:&error];
+    
+    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Cryo.png"] toPath:[mntPath stringByAppendingString:@"/en-1---white.png"] error:&error];
+    
+    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/passcodetrolley.png"] toPath:[mntPath stringByAppendingString:@"/en-2-A B C--white.png"] error:&error];
+    
+    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Geo.png"] toPath:[mntPath stringByAppendingString:@"/en-3-D E F--white.png"] error:&error];
+    
+    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Anemo.png"] toPath:[mntPath stringByAppendingString:@"/en-4-G H I--white.png"] error:&error];
+    
+    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Electro.png"] toPath:[mntPath stringByAppendingString:@"/en-5-J K L--white.png"] error:&error];
+    
+    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Hydro.png"] toPath:[mntPath stringByAppendingString:@"/en-6-M N O--white.png"] error:&error];
+    
+    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Pyro.png"] toPath:[mntPath stringByAppendingString:@"/en-7-P Q R S--white.png"] error:&error];
+    
+    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/imaginary.png"] toPath:[mntPath stringByAppendingString:@"/en-8-T U V--white.png"] error:&error];
+    
+    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Dendro.png"] toPath:[mntPath stringByAppendingString:@"/en-9-W X Y Z--white.png"] error:&error];
 
-    printf("unredirecting from tmp\n");
     NSArray* dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath error:NULL];
     NSLog(@"/var/tmp directory list:\n %@", dirs);
+    printf("unredirecting from tmp\n");
     UnRedirectAndRemoveFolder(orig_to_v_data, mntPath);
     
     uint64_t telephonyui_vnode = getVnodeAtPathByChdir("/var/mobile/Library/Caches/TelephonyUI-9");
     printf("[i] /var/mobile/Library/Caches/TelephonyUI-9 vnode: 0x%llx\n", telephonyui_vnode);
     
-    
-    //2. Create symbolic link /var/tmp/image.png -> /var/mobile/Library/Caches/TelephonyUI-9/en-0---white.png
+    //2. Create symbolic link /var/tmp/image.png -> /var/mobile/Library/Caches/TelephonyUI-9/en-number-letters--white.png, loop through then done. Technically just add our known image paths in /var/tmp (they can be anything, just 1.png also works) into an array then loop through both that array and this directory to automate it
 
     orig_to_v_data = createFolderAndRedirect(telephonyui_vnode, mntPath);
     
+    // Remove and symlink for "en-0---white.png"
     printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-0---white.png"] error:nil]);
     printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-0---white.png", [mntPath stringByAppendingString:@"/en-0---white.png"].UTF8String), errno);
-    
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-0---white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-0---white.png", [mntPath stringByAppendingString:@"/en-0---white.png"].UTF8String), errno);
-    
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-0---white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-0---white.png", [mntPath stringByAppendingString:@"/en-0---white.png"].UTF8String), errno);
-    
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-0---white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-0---white.png", [mntPath stringByAppendingString:@"/en-0---white.png"].UTF8String), errno);
-    
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-0---white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-0---white.png", [mntPath stringByAppendingString:@"/en-0---white.png"].UTF8String), errno);
+    // Remove and symlink for "en-1---white.png"
+    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-1---white.png"] error:nil]);
+    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-1---white.png", [mntPath stringByAppendingString:@"/en-1---white.png"].UTF8String), errno);
+    // Remove and symlink for "en-2-A B C--white.png"
+    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-2-A B C--white.png"] error:nil]);
+    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-2-A B C--white.png", [mntPath stringByAppendingString:@"/en-2-A B C--white.png"].UTF8String), errno);
+    // Remove and symlink for "en-3-D E F--white.png"
+    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-3-D E F--white.png"] error:nil]);
+    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-3-D E F--white.png", [mntPath stringByAppendingString:@"/en-3-D E F--white.png"].UTF8String), errno);
+    // Remove and symlink for "en-4-G H I--white.png"
+    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-4-G H I--white.png"] error:nil]);
+    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-4-G H I--white.png", [mntPath stringByAppendingString:@"/en-4-G H I--white.png"].UTF8String), errno);
+    // Remove and symlink for "en-5-J K L--white.png"
+    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-5-J K L--white.png"] error:nil]);
+    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-5-J K L--white.png", [mntPath stringByAppendingString:@"/en-5-J K L--white.png"].UTF8String), errno);
+    // Remove and symlink for "en-6-M N O--white.png"
+    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-6-M N O--white.png"] error:nil]);
+    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-6-M N O--white.png", [mntPath stringByAppendingString:@"/en-6-M N O--white.png"].UTF8String), errno);
+    // Remove and symlink for "en-7-P Q R S--white.png"
+    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-7-P Q R S--white.png"] error:nil]);
+    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-7-P Q R S--white.png", [mntPath stringByAppendingString:@"/en-7-P Q R S--white.png"].UTF8String), errno);
+    // Remove and symlink for "en-8-T U V--white.png"
+    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-8-T U V--white.png"] error:nil]);
+    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-8-T U V--white.png", [mntPath stringByAppendingString:@"/en-8-T U V--white.png"].UTF8String), errno);
+    // Remove and symlink for "en-9-W X Y Z--white.png"
+    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-9-W X Y Z--white.png"] error:nil]);
+    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-9-W X Y Z--white.png", [mntPath stringByAppendingString:@"/en-9-W X Y Z--white.png"].UTF8String), errno);
     
     dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath error:NULL];
     NSLog(@"/var/mobile/Library/Caches/TelephonyUI-9 directory list:\n %@", dirs);
@@ -311,45 +344,4 @@ int listCache(void) {
     return 0;
 }
 
-int CCTest(void) {
-    // /var/mobile/Library/ControlCenter/ModuleConfiguration.plist
-    // 2 steps down
-    NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted"];
-    [[NSFileManager defaultManager] removeItemAtPath:mntPath error:nil];
-    [[NSFileManager defaultManager] createDirectoryAtPath:mntPath withIntermediateDirectories:NO attributes:nil error:nil];
-    uint64_t library_vnode = getVnodeLibrary();
-    uint64_t cc_vnode = findChildVnodeByVnode(library_vnode, "ControlCenter");
-    int trycount = 0;
-//
-//    while(1) {
-//        if(cc_vnode != 0)
-//            break5;
-//        cc_vnode = findChildVnodeByVnode(library_vnode, "ControlCenter");
-//        trycount++;
-//    }
-    printf("[i] /var/mobile/Library/ControlCenter vnode: 0x%llx, trycount: %d\n", cc_vnode, trycount);
-    
-    uint64_t orig_to_v_data = funVnodeRedirectFolderFromVnode(mntPath.UTF8String, cc_vnode);
-//    printf("overwriting passcode face\n");
-//    funVnodeOverwriteFileUnlimitSize([mntPath stringByAppendingString:@"en-0---white.png"].UTF8String, [NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/1.png"].UTF8String);
-//    printf("cleaning up\n");
-    NSArray* dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath error:NULL];
-    NSLog(@"directory list:\n %@", dirs);
-    UnRedirectAndRemoveFolder(orig_to_v_data, mntPath);
-    return 0;
-}
-
-//NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted"];
-//// /var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles/CloudConfigurationDetails.plist
-//
-//uint64_t systemgroup_vnode = getVnodeSystemGroup();
-//
-////must enter 3 subdirectories
-//uint64_t configurationprofiles_vnode = findChildVnodeByVnode(systemgroup_vnode, "systemgroup.com.apple.configurationprofiles");
-//while(1) {
-//    if(configurationprofiles_vnode != 0)
-//        break;
-//    configurationprofiles_vnode = findChildVnodeByVnode(systemgroup_vnode, "systemgroup.com.apple.configurationprofiles");
-//}
-//printf("[i] /var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles vnode: 0x%llx\n", configurationprofiles_vnode);
 

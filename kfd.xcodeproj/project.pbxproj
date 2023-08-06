@@ -11,10 +11,19 @@
 		297BA10B2A310AE100D1E51A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297BA10A2A310AE100D1E51A /* ContentView.swift */; };
 		297BA10D2A310AE200D1E51A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 297BA10C2A310AE200D1E51A /* Assets.xcassets */; };
 		297BA1112A310AE200D1E51A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 297BA1102A310AE200D1E51A /* Preview Assets.xcassets */; };
+		C81A67002A7F814F0021B288 /* passcodetrolley.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A66FF2A7F814F0021B288 /* passcodetrolley.png */; };
+		C81A67062A7F942B0021B288 /* Anemo.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A67032A7F942B0021B288 /* Anemo.png */; };
+		C81A67072A7F942B0021B288 /* Cryo.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A67042A7F942B0021B288 /* Cryo.png */; };
+		C81A67082A7F942B0021B288 /* Electro.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A67052A7F942B0021B288 /* Electro.png */; };
+		C81A670F2A7FBEB30021B288 /* Dendro.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A670B2A7FBEB30021B288 /* Dendro.png */; };
+		C81A67102A7FBEB30021B288 /* Pyro.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A670C2A7FBEB30021B288 /* Pyro.png */; };
+		C81A67112A7FBEB30021B288 /* Hydro.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A670D2A7FBEB30021B288 /* Hydro.png */; };
+		C81A67122A7FBEB30021B288 /* Geo.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A670E2A7FBEB30021B288 /* Geo.png */; };
+		C81A67142A7FC4540021B288 /* Quantum.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A67132A7FC4540021B288 /* Quantum.png */; };
+		C81A67162A7FC5C80021B288 /* imaginary.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A67152A7FC5C80021B288 /* imaginary.png */; };
 		C83165432A7D5A15004A4C22 /* PlampyWifi.car in Resources */ = {isa = PBXBuildFile; fileRef = C83165422A7D5A15004A4C22 /* PlampyWifi.car */; };
 		C86E3CB82A7CFFF5004A1B56 /* modules.materialrecipe in Resources */ = {isa = PBXBuildFile; fileRef = C86E3CB62A7CFFF5004A1B56 /* modules.materialrecipe */; };
 		C86E3CB92A7CFFF5004A1B56 /* modulesBackground.materialrecipe in Resources */ = {isa = PBXBuildFile; fileRef = C86E3CB72A7CFFF5004A1B56 /* modulesBackground.materialrecipe */; };
-		C88E148E2A7F5BC3000D60C2 /* other-0-+--white.png in Resources */ = {isa = PBXBuildFile; fileRef = C88E148D2A7F5BC3000D60C2 /* other-0-+--white.png */; };
 		C893D2022A7BB82500643CCC /* SFUI.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C893D1F62A7BB82500643CCC /* SFUI.ttf */; };
 		C893D2032A7BB82500643CCC /* ios16.car in Resources */ = {isa = PBXBuildFile; fileRef = C893D1F82A7BB82500643CCC /* ios16.car */; };
 		C893D2052A7BB82500643CCC /* mainvolume.caml in Resources */ = {isa = PBXBuildFile; fileRef = C893D1FB2A7BB82500643CCC /* mainvolume.caml */; };
@@ -60,19 +69,19 @@
 		297BA1102A310AE200D1E51A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		29A358F32A43B53300C297A1 /* smith.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = smith.h; sourceTree = "<group>"; };
 		29A765292A393FCB006617E8 /* perf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = perf.h; sourceTree = "<group>"; };
+		C81A66FF2A7F814F0021B288 /* passcodetrolley.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = passcodetrolley.png; sourceTree = "<group>"; };
+		C81A67032A7F942B0021B288 /* Anemo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Anemo.png; sourceTree = "<group>"; };
+		C81A67042A7F942B0021B288 /* Cryo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Cryo.png; sourceTree = "<group>"; };
+		C81A67052A7F942B0021B288 /* Electro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Electro.png; sourceTree = "<group>"; };
+		C81A670B2A7FBEB30021B288 /* Dendro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Dendro.png; sourceTree = "<group>"; };
+		C81A670C2A7FBEB30021B288 /* Pyro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Pyro.png; sourceTree = "<group>"; };
+		C81A670D2A7FBEB30021B288 /* Hydro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Hydro.png; sourceTree = "<group>"; };
+		C81A670E2A7FBEB30021B288 /* Geo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Geo.png; sourceTree = "<group>"; };
+		C81A67132A7FC4540021B288 /* Quantum.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Quantum.png; sourceTree = "<group>"; };
+		C81A67152A7FC5C80021B288 /* imaginary.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = imaginary.png; sourceTree = "<group>"; };
 		C83165422A7D5A15004A4C22 /* PlampyWifi.car */ = {isa = PBXFileReference; lastKnownFileType = file; path = PlampyWifi.car; sourceTree = "<group>"; };
-		C83165562A7D6DB7004A4C22 /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
-		C83165572A7D6DB7004A4C22 /* 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 2.png; sourceTree = "<group>"; };
-		C83165582A7D6DB7004A4C22 /* 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 3.png; sourceTree = "<group>"; };
-		C83165592A7D6DB7004A4C22 /* 8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 8.png; sourceTree = "<group>"; };
-		C831655A2A7D6DB7004A4C22 /* 6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 6.png; sourceTree = "<group>"; };
-		C831655B2A7D6DB7004A4C22 /* 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 4.png; sourceTree = "<group>"; };
-		C831655C2A7D6DB7004A4C22 /* 9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 9.png; sourceTree = "<group>"; };
-		C831655D2A7D6DB7004A4C22 /* 7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 7.png; sourceTree = "<group>"; };
-		C831655E2A7D6DB7004A4C22 /* 5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 5.png; sourceTree = "<group>"; };
 		C86E3CB62A7CFFF5004A1B56 /* modules.materialrecipe */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = modules.materialrecipe; sourceTree = "<group>"; };
 		C86E3CB72A7CFFF5004A1B56 /* modulesBackground.materialrecipe */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = modulesBackground.materialrecipe; sourceTree = "<group>"; };
-		C88E148D2A7F5BC3000D60C2 /* other-0-+--white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "other-0-+--white.png"; sourceTree = "<group>"; };
 		C893D1F62A7BB82500643CCC /* SFUI.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SFUI.ttf; sourceTree = "<group>"; };
 		C893D1F82A7BB82500643CCC /* ios16.car */ = {isa = PBXFileReference; lastKnownFileType = file; path = ios16.car; sourceTree = "<group>"; };
 		C893D1FB2A7BB82500643CCC /* mainvolume.caml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainvolume.caml; sourceTree = "<group>"; };
@@ -153,16 +162,16 @@
 		2948BA6A2A3162C600B2ED3C /* libkfd */ = {
 			isa = PBXGroup;
 			children = (
-				C88E148D2A7F5BC3000D60C2 /* other-0-+--white.png */,
-				C83165562A7D6DB7004A4C22 /* 1.png */,
-				C83165572A7D6DB7004A4C22 /* 2.png */,
-				C83165582A7D6DB7004A4C22 /* 3.png */,
-				C831655B2A7D6DB7004A4C22 /* 4.png */,
-				C831655E2A7D6DB7004A4C22 /* 5.png */,
-				C831655A2A7D6DB7004A4C22 /* 6.png */,
-				C831655D2A7D6DB7004A4C22 /* 7.png */,
-				C83165592A7D6DB7004A4C22 /* 8.png */,
-				C831655C2A7D6DB7004A4C22 /* 9.png */,
+				C81A67152A7FC5C80021B288 /* imaginary.png */,
+				C81A67132A7FC4540021B288 /* Quantum.png */,
+				C81A670B2A7FBEB30021B288 /* Dendro.png */,
+				C81A670E2A7FBEB30021B288 /* Geo.png */,
+				C81A670D2A7FBEB30021B288 /* Hydro.png */,
+				C81A670C2A7FBEB30021B288 /* Pyro.png */,
+				C81A67032A7F942B0021B288 /* Anemo.png */,
+				C81A67042A7F942B0021B288 /* Cryo.png */,
+				C81A67052A7F942B0021B288 /* Electro.png */,
+				C81A66FF2A7F814F0021B288 /* passcodetrolley.png */,
 				C86E3CB62A7CFFF5004A1B56 /* modules.materialrecipe */,
 				C86E3CB72A7CFFF5004A1B56 /* modulesBackground.materialrecipe */,
 				C893D2102A7C2FB200643CCC /* mainplaypausestop.caml */,
@@ -330,21 +339,30 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C81A670F2A7FBEB30021B288 /* Dendro.png in Resources */,
+				C81A67102A7FBEB30021B288 /* Pyro.png in Resources */,
 				C8C43BF82A797848008B08F9 /* lock.caf in Resources */,
+				C81A67162A7FC5C80021B288 /* imaginary.png in Resources */,
+				C81A67082A7F942B0021B288 /* Electro.png in Resources */,
 				297BA1112A310AE200D1E51A /* Preview Assets.xcassets in Resources */,
+				C81A67112A7FBEB30021B288 /* Hydro.png in Resources */,
 				C86E3CB82A7CFFF5004A1B56 /* modules.materialrecipe in Resources */,
+				C81A67062A7F942B0021B288 /* Anemo.png in Resources */,
 				C893D2022A7BB82500643CCC /* SFUI.ttf in Resources */,
 				C83165432A7D5A15004A4C22 /* PlampyWifi.car in Resources */,
+				C81A67002A7F814F0021B288 /* passcodetrolley.png in Resources */,
 				C893D2112A7C2FB200643CCC /* mainplaypausestop.caml in Resources */,
 				C893D20D2A7C16E500643CCC /* mainforwardbackward.caml in Resources */,
+				C81A67142A7FC4540021B288 /* Quantum.png in Resources */,
 				C893D20A2A7BB82500643CCC /* mainbrightness.caml in Resources */,
 				297BA10D2A310AE200D1E51A /* Assets.xcassets in Resources */,
-				C88E148E2A7F5BC3000D60C2 /* other-0-+--white.png in Resources */,
+				C81A67072A7F942B0021B288 /* Cryo.png in Resources */,
 				C893D2082A7BB82500643CCC /* focusmain.caml in Resources */,
 				C893D2062A7BB82500643CCC /* mainbluetooth.caml in Resources */,
 				C893D2052A7BB82500643CCC /* mainvolume.caml in Resources */,
 				C86E3CB92A7CFFF5004A1B56 /* modulesBackground.materialrecipe in Resources */,
 				C893D2032A7BB82500643CCC /* ios16.car in Resources */,
+				C81A67122A7FBEB30021B288 /* Geo.png in Resources */,
 				C8C194812A759CC700ABE8BF /* AAAA.bin in Resources */,
 				C893D20B2A7BB82500643CCC /* mainwifi.caml in Resources */,
 			);

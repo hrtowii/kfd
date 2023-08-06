@@ -294,7 +294,7 @@ void do_fun(char** enabledTweaks, int numTweaks) {
         if (strcmp(tweak, "enableDynamicIsland") == 0) {
             ResSet16(2796, 1290);
         }
-            listCache();
+            themePasscodes();
 //        removeSMSCache();
             do_kclose();
         }
