@@ -143,6 +143,7 @@
 		8CC7F5312A762D46004C6F30 /* kwrite_IOSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kwrite_IOSurface.h; sourceTree = "<group>"; };
 		8CC7F5322A765BED004C6F30 /* IOSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOSurface.h; sourceTree = "<group>"; };
 		6FB05A122A7E6D6B00684A87 /* IOKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOKit.h; sourceTree = "<group>"; };
+		6FEC680F2A7FC1DA000264D8 /* mineekpf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mineekpf.h; sourceTree = "<group>"; };
 		8C0AF3512A75B21A0065C9DD /* kread_IOSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kread_IOSurface.h; sourceTree = "<group>"; };
 		8C0AF3522A75B2DA0065C9DD /* IOSurface_shared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOSurface_shared.h; sourceTree = "<group>"; };
 		8C0AF3532A75B6340065C9DD /* intermediate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = intermediate.h; sourceTree = "<group>"; };
@@ -355,6 +356,7 @@
 				212762AE2A7574040070E6A5 /* fun */,
 				2948BA6A2A3162C600B2ED3C /* libkfd */,
 				2965065E2A31565B0025D1A7 /* libkfd.h */,
+				6FEC680F2A7FC1DA000264D8 /* mineekpf.h */,
 				6FB05A122A7E6D6B00684A87 /* IOKit.h */,
 				8C0AF3542A75B6340065C9DD /* intermediate.m */,
 				8C0AF3532A75B6340065C9DD /* intermediate.h */,
