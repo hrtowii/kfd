@@ -281,16 +281,16 @@ int themePasscodes(void) {
     // the topath name can be anything but i'm making them the same for easy copy paste
     
     NSArray *selectedFiles = @[
-        @"Quantum.png",
-        @"Cryo.png",
-        @"passcodetrolley.png",
-        @"Geo.png",
-        @"Anemo.png",
-        @"Electro.png",
-        @"Hydro.png",
-        @"Pyro.png",
-        @"imaginary.png",
-        @"Dendro.png"
+        @"image_part_010.png",
+        @"image_part_001.png",
+        @"image_part_002.png",
+        @"image_part_003.png",
+        @"image_part_004.png",
+        @"image_part_005.png",
+        @"image_part_006.png",
+        @"image_part_007.png",
+        @"image_part_008.png",
+        @"image_part_009.png"
     ];
     
     for (int i = 0; i < selectedFiles.count; i++) {
