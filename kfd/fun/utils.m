@@ -257,10 +257,18 @@ int themePasscodes(void) {
     NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted"];
     uint64_t var_tmp_vnode = getVnodeAtPathByChdir("/var/tmp");
     
-//    for(NSString *dir in dirs) {
-//        NSString *path = [NSString stringWithFormat:@"%@/%@", mntPath, dir];
-//        [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
-//    }
+    NSArray *fileNames = @[
+        @"/en-0---white.png",
+        @"/en-1---white.png",
+        @"/en-2-A B C--white.png",
+        @"/en-3-D E F--white.png",
+        @"/en-4-G H I--white.png",
+        @"/en-5-J K L--white.png",
+        @"/en-6-M N O--white.png",
+        @"/en-7-P Q R S--white.png",
+        @"/en-8-T U V--white.png",
+        @"/en-9-W X Y Z--white.png"
+    ];
     
     printf("[i] /var/tmp vnode: 0x%llx\n", var_tmp_vnode);
     // symlink documents folder to /var/tmp, then copy all our images there
@@ -272,28 +280,32 @@ int themePasscodes(void) {
     
     // the topath name can be anything but i'm making them the same for easy copy paste
     
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Quantum.png"] toPath:[mntPath stringByAppendingString:@"/en-0---white.png"] error:&error];
+    NSArray *selectedFiles = @[
+        @"Quantum.png",
+        @"Cryo.png",
+        @"passcodetrolley.png",
+        @"Geo.png",
+        @"Anemo.png",
+        @"Electro.png",
+        @"Hydro.png",
+        @"Pyro.png",
+        @"imaginary.png",
+        @"Dendro.png"
+    ];
     
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Cryo.png"] toPath:[mntPath stringByAppendingString:@"/en-1---white.png"] error:&error];
-    
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/passcodetrolley.png"] toPath:[mntPath stringByAppendingString:@"/en-2-A B C--white.png"] error:&error];
-    
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Geo.png"] toPath:[mntPath stringByAppendingString:@"/en-3-D E F--white.png"] error:&error];
-    
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Anemo.png"] toPath:[mntPath stringByAppendingString:@"/en-4-G H I--white.png"] error:&error];
-    
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Electro.png"] toPath:[mntPath stringByAppendingString:@"/en-5-J K L--white.png"] error:&error];
-    
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Hydro.png"] toPath:[mntPath stringByAppendingString:@"/en-6-M N O--white.png"] error:&error];
-    
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Pyro.png"] toPath:[mntPath stringByAppendingString:@"/en-7-P Q R S--white.png"] error:&error];
-    
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/imaginary.png"] toPath:[mntPath stringByAppendingString:@"/en-8-T U V--white.png"] error:&error];
-    
-    [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/Dendro.png"] toPath:[mntPath stringByAppendingString:@"/en-9-W X Y Z--white.png"] error:&error];
+    for (int i = 0; i < selectedFiles.count; i++) {
+            NSString *sourceFilePath = [NSString stringWithFormat:@"%@/%@", NSBundle.mainBundle.bundlePath, selectedFiles[i]];
+            NSString *destinationFilePath = [mntPath stringByAppendingString:fileNames[i]];
 
+            [[NSFileManager defaultManager] copyItemAtPath:sourceFilePath toPath:destinationFilePath error:&error];
+            if (error) {
+                NSLog(@"Error while copying file: %@", error);
+                error = nil; // Reset error for the next iteration
+            }
+        }
+    
     NSArray* dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath error:NULL];
-    NSLog(@"/var/tmp directory list:\n %@", dirs);
+//    NSLog(@"/var/tmp directory list:\n %@", dirs);
     printf("unredirecting from tmp\n");
     UnRedirectAndRemoveFolder(orig_to_v_data, mntPath);
     
@@ -303,37 +315,14 @@ int themePasscodes(void) {
     //2. Create symbolic link /var/tmp/image.png -> /var/mobile/Library/Caches/TelephonyUI-9/en-number-letters--white.png, loop through then done. Technically just add our known image paths in /var/tmp (they can be anything, just 1.png also works) into an array then loop through both that array and this directory to automate it
 
     orig_to_v_data = createFolderAndRedirect(telephonyui_vnode, mntPath);
-    
-    // Remove and symlink for "en-0---white.png"
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-0---white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-0---white.png", [mntPath stringByAppendingString:@"/en-0---white.png"].UTF8String), errno);
-    // Remove and symlink for "en-1---white.png"
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-1---white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-1---white.png", [mntPath stringByAppendingString:@"/en-1---white.png"].UTF8String), errno);
-    // Remove and symlink for "en-2-A B C--white.png"
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-2-A B C--white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-2-A B C--white.png", [mntPath stringByAppendingString:@"/en-2-A B C--white.png"].UTF8String), errno);
-    // Remove and symlink for "en-3-D E F--white.png"
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-3-D E F--white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-3-D E F--white.png", [mntPath stringByAppendingString:@"/en-3-D E F--white.png"].UTF8String), errno);
-    // Remove and symlink for "en-4-G H I--white.png"
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-4-G H I--white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-4-G H I--white.png", [mntPath stringByAppendingString:@"/en-4-G H I--white.png"].UTF8String), errno);
-    // Remove and symlink for "en-5-J K L--white.png"
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-5-J K L--white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-5-J K L--white.png", [mntPath stringByAppendingString:@"/en-5-J K L--white.png"].UTF8String), errno);
-    // Remove and symlink for "en-6-M N O--white.png"
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-6-M N O--white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-6-M N O--white.png", [mntPath stringByAppendingString:@"/en-6-M N O--white.png"].UTF8String), errno);
-    // Remove and symlink for "en-7-P Q R S--white.png"
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-7-P Q R S--white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-7-P Q R S--white.png", [mntPath stringByAppendingString:@"/en-7-P Q R S--white.png"].UTF8String), errno);
-    // Remove and symlink for "en-8-T U V--white.png"
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-8-T U V--white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-8-T U V--white.png", [mntPath stringByAppendingString:@"/en-8-T U V--white.png"].UTF8String), errno);
-    // Remove and symlink for "en-9-W X Y Z--white.png"
-    printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:[mntPath stringByAppendingString:@"/en-9-W X Y Z--white.png"] error:nil]);
-    printf("symlink ret: %d, errno: %d\n", symlink("/var/tmp/en-9-W X Y Z--white.png", [mntPath stringByAppendingString:@"/en-9-W X Y Z--white.png"].UTF8String), errno);
+
+    for (NSString *fileName in fileNames) {
+        NSString *filePath = [mntPath stringByAppendingPathComponent:fileName];
+        NSString *symlinkPath = [NSString stringWithFormat:@"/var/tmp/%@", fileName];
+
+        printf("remove ret: %d\n", [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil]);
+        printf("symlink ret: %d, errno: %d\n", symlink(symlinkPath.UTF8String, filePath.UTF8String), errno);
+    }
     
     dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath error:NULL];
     NSLog(@"/var/mobile/Library/Caches/TelephonyUI-9 directory list:\n %@", dirs);
