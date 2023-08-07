@@ -440,6 +440,7 @@ void DynamicCOW(void) {
                 if ([key isEqualToString:@"oPeik/9e8lQWMszEjbPzng"]) {
                     printf("found key\n");
                     [value setValue:[NSNumber numberWithInt:2556] forKey: @"ArtworkDeviceSubType"]; // 2532, 2556, 2796
+//                    [value setValue:@"phone" forKey: @"ArtworkDeviceIdiom"]; bricks your fucking phone don't do this please PLEASE
                     *stop3 = true;
                 }
             }];
