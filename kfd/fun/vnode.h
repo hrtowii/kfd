@@ -6,7 +6,8 @@
 //
 
 #include <stdio.h>
-
+#include <stdbool.h>
+#define BOOL bool
 #define MNT_RDONLY      0x00000001      /* read only filesystem */
 #define VISSHADOW       0x008000        /* vnode is a shadow file */
 
@@ -110,3 +111,5 @@ Description:
 uint64_t funVnodeOverwriteFileUnlimitSize(char* to, char* from);
 
 uint64_t funVnodeOverwriteFileUnlimitSizeWithVnode(uint64_t to_vnode, char* from);
+
+uint64_t findChildVnodeByVnodeWithBlock(uint64_t vnode, const char* childname, void (^completion)(uint64_t vn, bool* stop));

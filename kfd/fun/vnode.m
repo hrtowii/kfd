@@ -652,3 +652,44 @@ uint64_t getVnodeAtPathByChdir(char *path) {
     chdir("/");
     return fd_cdir_vp;
 }
+
+uint64_t findChildVnodeByVnodeWithBlock(uint64_t vnode, const char* childname, void (^completion)(uint64_t vn, bool* stop)) {
+    uint64_t vp_nameptr = kread64(vnode + off_vnode_v_name);
+    uint64_t vp_name = kread64(vp_nameptr);
+    
+    char _vp_name[16];
+    do_kread(vp_nameptr, &_vp_name, 16);
+    
+    printf("found named %s\n", _vp_name);
+    
+    uint64_t vp_namecache = kread64(vnode + off_vnode_v_ncchildren_tqh_first);
+    
+    printf("vp_namecache: 0x%02llX", vp_namecache);
+    
+    if(vp_namecache == 0)
+        return 0;
+    
+    BOOL stop = false;
+    
+    while(1) {
+        if(vp_namecache == 0)
+            break;
+        vnode = kread64(vp_namecache + off_namecache_nc_vp);
+                
+        if(vnode == 0 || stop == true)
+            break;
+        vp_nameptr = kread64(vnode + off_vnode_v_name);
+        
+        char vp_name[48];
+        do_kread(vp_nameptr, &vp_name, 16);
+        do_kread((vp_nameptr + 16), (&vp_name + 16), 16);
+        do_kread((vp_nameptr + 32), (&vp_name + 32), 16);
+
+        if(strcmp(vp_name, childname) == 0) {
+            completion(vnode, &stop);
+        }
+        vp_namecache = kread64(vp_namecache + off_namecache_nc_child_tqe_prev);
+    }
+
+    return 0;
+}

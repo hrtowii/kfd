@@ -180,53 +180,6 @@ NSDictionary *changeDictValue(NSDictionary *dictionary, NSString *key, id value)
     return [mutableDictionary copy];
 }
 
-@interface MyUtility : NSObject
-
-+ (void)applyDynamicIsland;
-
-@end
-
-@implementation MyUtility
-
-+ (void)applyDynamicIsland {
-    printf("Tryna apply dynamic island");
-    sleep(1);
-    NSString *backupFilePath = [NSString stringWithFormat:@"%@/com.apple.MobileGestalt-BACKUP.plist", NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0]];
-    
-    if (![[NSFileManager defaultManager] fileExistsAtPath:backupFilePath]) {
-        NSString *sourceFilePath = @"/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist";
-        NSData *plistData = [NSData dataWithContentsOfFile:sourceFilePath];
-        [plistData writeToFile:backupFilePath atomically:YES];
-    }
-    
-    NSData *plistData = [NSData dataWithContentsOfFile:backupFilePath];
-    NSError *error = nil;
-    NSDictionary *plist = [NSPropertyListSerialization propertyListWithData:plistData options:0 format:nil error:&error];
-    
-    if (error) {
-        NSLog(@"Error while reading plist: %@", error);
-        return;
-    }
-    
-    NSDictionary *newPlist = changeDictValue(plist, @"ArtworkDeviceSubType", @2796);
-    NSData *newData = [NSPropertyListSerialization dataWithPropertyList:newPlist format:NSPropertyListBinaryFormat_v1_0 options:0 error:&error];
-    
-    if (error) {
-        NSLog(@"Error while serializing plist: %@", error);
-        return;
-    }
-    
-    if (newData.length == plistData.length) {
-        NSLog(@"Same Size!");
-        NSString *temporaryFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"temp_com.apple.MobileGestalt.plist"];
-        [newData writeToFile:temporaryFilePath atomically:YES];
-        funVnodeOverwriteFile(@"/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist", temporaryFilePath.UTF8String);
-    } else {
-        NSLog(@"OLD DATA: %lu", (unsigned long)plistData.length);
-        NSLog(@"NEW DATA: %lu", (unsigned long)newData.length);
-    }
-}
-
 
 void do_fun(char** enabledTweaks, int numTweaks) {
     
@@ -279,6 +232,7 @@ void do_fun(char** enabledTweaks, int numTweaks) {
         }
         if (strcmp(tweak, "enableCustomFont") == 0) {
             funVnodeOverwrite2("/System/Library/Fonts/CoreUI/SFUI.ttf", [NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/SFUI.ttf"].UTF8String);
+            funVnodeOverwrite2("/System/Library/Fonts/Watch/ADTTime.ttc", [NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/ADTTime.ttc"].UTF8String);
         }
         if (strcmp(tweak, "enableLSTweaks") == 0) {
             funVnodeOverwrite2("/System/Library/PrivateFrameworks/CoverSheet.framework/Assets.car", [NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/ios16.car"].UTF8String);
@@ -291,16 +245,12 @@ void do_fun(char** enabledTweaks, int numTweaks) {
             funVnodeHide("/System/Library/PrivateFrameworks/SpringBoardHome.framework/folderDark.materialrecipe");
             funVnodeHide("/System/Library/PrivateFrameworks/CoreMaterial.framework/platters.materialrecipe");
         }
-        if (strcmp(tweak, "enableDynamicIsland") == 0) {
-            ResSet16(2796, 1290);
-        }
+        if (strcmp(tweak, "enablePasscodes") == 0) {
             themePasscodes();
-//        removeSMSCache();
-            do_kclose();
+        }
+        if (strcmp(tweak, "enableDynamicIsland") == 0) {
+            DynamicCOW();
+        }
         }
     }
-//    funVnodeOverwrite2("/System/Library/PrivateFrameworks/CoreMaterial.framework/modules.materialrecipe", [NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/modules.materialrecipe"].UTF8String);
-//    funVnodeOverwrite2("/System/Library/PrivateFrameworks/CoreMaterial.framework/modulesBackground.materialrecipe", [NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/modulesBackground.materialrecipe"].UTF8String);
-//    do_kclose();
-//    restartBackboard();
-@end
+

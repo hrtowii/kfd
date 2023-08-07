@@ -15,6 +15,7 @@ struct ContentView: View {
     @State private var enableResSet = false
     @State private var enableHideHomebar = false
     @State private var enableHideNotifs = false
+    @State private var enablePasscodes = false
     @State private var enableDynamicIsland = false
     
     var puafPagesOptions = [16, 32, 64, 128, 256, 512, 1024, 2048]
@@ -35,8 +36,8 @@ struct ContentView: View {
                             Text("Success!")
                                 .font(.headline)
                                 .foregroundColor(.green)
-                            Text("View output in Xcode")
-                                .foregroundColor(.gray)
+                            Text("Tap umbrella to respring <3")
+                                .foregroundColor(.pink)
                         }
                     }
                 }
@@ -131,12 +132,24 @@ struct ContentView: View {
                         .onChange(of: enableHideNotifs, perform: { _ in
                             // Perform any actions when the toggle state changes
                         })
+                        Toggle(isOn: $enablePasscodes) {
+                            HStack(spacing: 20) {
+                                Image(systemName: enablePasscodes ? "pencil.circle.fill" : "pencil.circle")
+                                    .foregroundColor(.pink)
+                                    .imageScale(.large)
+                                Text("Enable theming passcode icons")
+                                    .font(.headline)
+                            }
+                        }
+                        .onChange(of: enablePasscodes, perform: { _ in
+                            // Perform any actions when the toggle state changes
+                        })
                         Toggle(isOn: $enableDynamicIsland) {
                             HStack(spacing: 20) {
                                 Image(systemName: enableDynamicIsland ? "pencil.circle.fill" : "pencil.circle")
                                     .foregroundColor(.pink)
                                     .imageScale(.large)
-                                Text("Enable the dynamic island")
+                                Text("Enable dynamic island")
                                     .font(.headline)
                             }
                         }
@@ -165,6 +178,8 @@ struct ContentView: View {
 
                         // Deallocate the C-style strings after use to avoid memory leaks
                         cTweaks.forEach { free($0) }
+                        do_kclose()
+//                        restartFrontboard()
                     }
                     .buttonStyle(BorderlessButtonStyle())
                 }
@@ -264,6 +279,12 @@ struct ContentView: View {
         }
         if enableHideNotifs {
             enabledTweaks.append("enableHideNotifs")
+        }
+        if enablePasscodes {
+            enabledTweaks.append("enablePasscodes")
+        }
+        if enableDynamicIsland {
+            enabledTweaks.append("enableDynamicIsland")
         }
 
         return enabledTweaks

@@ -333,4 +333,169 @@ int themePasscodes(void) {
     return 0;
 }
 
+#define HEXDUMP_COLS 16
+void hexdump(void *mem, unsigned int len)
+{
+        unsigned int i, j;
+        
+        for(i = 0; i < len + ((len % HEXDUMP_COLS) ? (HEXDUMP_COLS - len % HEXDUMP_COLS) : 0); i++)
+        {
+                /* print offset */
+                if(i % HEXDUMP_COLS == 0)
+                {
+                        printf("0x%06x: ", i);
+                }
+ 
+                /* print hex data */
+                if(i < len)
+                {
+                        printf("%02x ", 0xFF & ((char*)mem + i)[i]);
+                }
+                else /* end of block, just aligning for ASCII dump */
+                {
+                        printf("   ");
+                }
+                
+                /* print ASCII dump */
+                if(i % HEXDUMP_COLS == (HEXDUMP_COLS - 1))
+                {
+                        for(j = i - (HEXDUMP_COLS - 1); j <= i; j++)
+                        {
+                                if(j >= len) /* end of block, not really printing */
+                                {
+                                        putchar(' ');
+                                }
+                                else if(isprint(((char*)mem)[j])) /* printable char */
+                                {
+                                        putchar(0xFF & ((char*)mem)[j]);
+                                }
+                                else /* other char */
+                                {
+                                        putchar('.');
+                                }
+                        }
+                        putchar('\n');
+                }
+        }
+}
+
+void DynamicCOW(void) {
+    
+    _offsets_init();
+    
+    xpc_crasher("com.apple.mobilegestalt.xpc");
+    
+    //1. find "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
+    //    uint64_t var_vnode = getVnodeVar();
+    //    printf("found var vnode\n");
+    uint64_t vnode = getVnodeAtPathByChdir("/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/");
+    //    printf("found containers vnode\n");
+    //    printf("[i] /var/containers vnode: 0x%llx\n", var_containers_vnode);
+    //
+    //    uint64_t Shared_vnode = findChildVnodeByVnode(var_containers_vnode, "Shared");
+    //    printf("found Shared vnode\n");
+    //    printf("[i] /var/containers/Shared vnode: 0x%llx\n", Shared_vnode);
+    //
+    //    uint64_t SystemGroup_vnode = findChildVnodeByVnode(Shared_vnode, "SystemGroup");
+    //    printf("found SystemGroup vnode\n");
+    //    printf("[i] /var/containers/Shared/SystemGroup vnode: 0x%llx\n", SystemGroup_vnode); sleep(1);
+    //
+    NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted/"];
+    uint64_t orig_to_v_data = createFolderAndRedirect(vnode, mntPath);
+    //
+    //    uint64_t _cache_vnode = findChildVnodeByVnodeWithBlock(SystemGroup_vnode, "Caches", ^(uint64_t vn, bool* stop){
+    //        printf("found cache vnode\n");
+    //        printf("[i] /var/containers/Shared/SystemGroup vnode: 0x%llx\n", vn);
+    //
+    //        uint64_t orig_to_v_data = createFolderAndRedirect(vn, mntPath);
+    //
+    //        if (orig_to_v_data == -1) {
+    //            return;
+    //        }
+    //
+    //        printf("created var vnode folder\n");
+    //
+    
+    
+    [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath error:NULL] enumerateObjectsUsingBlock:^(NSString * _Nonnull __strong content, NSUInteger index, BOOL * _Nonnull stop2) {
+        NSLog(@"element: %@", content);
+        if ([content isEqualToString:@"com.apple.MobileGestalt.plist"]) {
+            
+            NSLog(@"contents: %@", [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath error:NULL]);
+            
+            printf("found proper vnode\n"); sleep(1);
+            
+            NSError *error = nil;
+            NSData * tempData = [[NSData alloc] initWithContentsOfFile:[mntPath stringByAppendingString:@"com.apple.MobileGestalt.plist"]];
+            
+            NSPropertyListFormat* plistFormat = NULL;
+            NSMutableDictionary *temp = [NSPropertyListSerialization propertyListWithData:tempData options:NSPropertyListMutableContainersAndLeaves format:plistFormat error:&error];
+            
+//            hexdump([tempData bytes], [tempData length]);
+            
+            NSMutableDictionary* cacheExtra = [temp valueForKey:@"CacheExtra"];
+            
+            [cacheExtra enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull __strong key, id  _Nonnull __strong value, BOOL * _Nonnull stop3) {
+                NSLog(@"key %@, value %@", key, value);
+                if ([key isEqualToString:@"oPeik/9e8lQWMszEjbPzng"]) {
+                    printf("found key\n");
+                    [value setValue:[NSNumber numberWithInt:2556] forKey: @"ArtworkDeviceSubType"]; // 2532, 2556, 2796
+                    *stop3 = true;
+                }
+            }];
+            
+            NSLog(
+                  @"%d %@",
+                  [[NSFileManager defaultManager] fileExistsAtPath:[mntPath stringByAppendingString:@"com.apple.MobileGestalt.plist"]],
+                  temp
+                  );
+            
+            NSError *error2;
+            NSData *_tempData = [NSPropertyListSerialization dataWithPropertyList: temp
+                                                                           format: NSPropertyListBinaryFormat_v1_0
+                                                                          options: 0
+                                                                            error: &error2];
+            
+            // Get a pointer to the bytes of the original data
+            uint8_t* buf = malloc([_tempData length] - 0x10);
+            memcpy(buf, [_tempData bytes] + 0x10, [_tempData length] - 0x10);
+            
+            // Create a new NSData instance with the remaining data
+            NSData *data = _tempData;
+            
+//            hexdump([data bytes], [data length]);
+            
+            NSLog(@"error serializing to xml: %@", error2);
+            
+            if (data == nil) {
+                printf("NULL DATA!!\n");
+                return;
+            }
+            
+            NSString* temp2 = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/com.apple.MobileGestalt2.plist"];
+            
+            [[NSFileManager defaultManager] removeItemAtPath:temp2 error:NULL];
+            
+            BOOL writeStatus = [data writeToFile: temp2
+                                         options: 0
+                                           error: &error2];
+            NSLog (@"error writing to file: %@", error2);
+            if (!writeStatus) {
+                return;
+            }
+            
+            funVnodeOverwriteFileUnlimitSize([[mntPath stringByAppendingString:@"com.apple.MobileGestalt.plist"] UTF8String], [temp2 UTF8String]);
+            
+            error = nil;
+            tempData = [[NSData alloc] initWithContentsOfFile:[mntPath stringByAppendingString:@"com.apple.MobileGestalt.plist"]];
+            
+            temp = [NSPropertyListSerialization propertyListWithData:tempData options:NSPropertyListMutableContainersAndLeaves format:plistFormat error:&error];
+            
+            NSLog(@"%@", temp);
+            
+            UnRedirectAndRemoveFolder(orig_to_v_data, mntPath);
+        }
+    }];
+}
+
 
