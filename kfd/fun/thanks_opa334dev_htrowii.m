@@ -208,7 +208,7 @@ uint64_t funVnodeOverwrite2(char* to, char* from) {
         printf("[-] File is too big to overwrite!\n");
         return -1;
     }
-
+    sleep(1);
     //mmap as read only
     printf("mmap as readonly\n");
     char* to_file_data = mmap(NULL, to_file_size, PROT_READ, MAP_SHARED, to_file_index, 0);

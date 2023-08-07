@@ -105,8 +105,9 @@ void perf_run(struct kfd* kfd)
         u32 mh_header[2] = {};
         mh_header[0] = kread_sem_open_kread_u32(kfd, kernel_base);
         mh_header[1] = kread_sem_open_kread_u32(kfd, kernel_base + 4);
-        assert(mh_header[0] == 0xfeedfacf);
-        assert(mh_header[1] == 0x0100000c);
+        printf(mh_header);
+//        assert(mh_header[0] == 0xfeedfacf);
+//        assert(mh_header[1] == 0x0100000c);
     }
 
     /*

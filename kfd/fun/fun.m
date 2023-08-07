@@ -182,16 +182,16 @@ NSDictionary *changeDictValue(NSDictionary *dictionary, NSString *key, id value)
 
 
 void do_fun(char** enabledTweaks, int numTweaks) {
-    
+    printf("initialising offsets");
     _offsets_init();
     
-    uint64_t kslide = get_kslide();
-    uint64_t kbase = 0xfffffff007004000 + kslide;
-    printf("[i] Kernel base: 0x%llx\n", kbase);
-    printf("[i] Kernel slide: 0x%llx\n", kslide);
-    uint64_t kheader64 = kread64(kbase);
-    printf("[i] Kernel base kread64 ret: 0x%llx\n", kheader64);
-    
+//    uint64_t kslide = get_kslide();
+//    uint64_t kbase = 0xfffffff007004000 + kslide;
+//    printf("[i] Kernel base: 0x%llx\n", kbase);
+//    printf("[i] Kernel slide: 0x%llx\n", kslide);
+//    uint64_t kheader64 = kread64(kbase);
+//    printf("[i] Kernel base kread64 ret: 0x%llx\n", kheader64);
+//    
     pid_t myPid = getpid();
     uint64_t selfProc = getProc(myPid);
     printf("[i] self proc: 0x%llx\n", selfProc);
