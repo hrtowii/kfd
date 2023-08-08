@@ -183,7 +183,7 @@ NSDictionary *changeDictValue(NSDictionary *dictionary, NSString *key, id value)
 
 void do_fun(char** enabledTweaks, int numTweaks) {
     printf("initialising offsets");
-    _offsets_init();
+//    _offsets_init();
     
 //    uint64_t kslide = get_kslide();
 //    uint64_t kbase = 0xfffffff007004000 + kslide;

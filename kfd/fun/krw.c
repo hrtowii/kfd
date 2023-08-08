@@ -37,7 +37,7 @@ uint64_t get_kslide(void) {
 }
 
 uint64_t get_kernproc(void) {
-    return ((struct kfd*)_kfd)->info.kaddr.kernel_proc;
+    return ((struct kfd*)_kfd)->info.kernel.kernel_proc;
 }
 
 uint8_t kread8(uint64_t where) {

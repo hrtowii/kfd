@@ -20,8 +20,14 @@ struct ContentView: View {
     
     var puafPagesOptions = [16, 32, 64, 128, 256, 512, 1024, 2048]
     var puafMethodOptions = ["physpuppet", "smith"]
-    var kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open"]
-    var kwriteMethodOptions = ["dup", "sem_open"]
+    private var puaf_method_options = ["physpuppet", "smith"]
+    @State private var puaf_method = 1
+
+    private var kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open", "IOSurface"]
+    @State private var kread_method = 3
+
+    private var kwriteMethodOptions = ["dup", "sem_open", "IOSurface"]
+    @State private var kwrite_method = 3
     
     @State private var isSettingsPopoverPresented = false // Track the visibility of the settings popup
     
@@ -164,20 +170,20 @@ struct ContentView: View {
                     Button("Confirm") {
                         kfd = do_kopen(UInt64(puafPages), UInt64(puafMethod), UInt64(kreadMethod), UInt64(kwriteMethod))
 
-//                        let tweaks = enabledTweaks()
-//
-//                        // Convert the Swift array of strings to a C-style array of char*
-//                        var cTweaks: [UnsafeMutablePointer<CChar>?] = tweaks.map { strdup($0) }
-//                        // Add a null pointer at the end to signal the end of the array
-//                        cTweaks.append(nil)
-//
-//                        // Pass the C-style array to do_fun along with the count of tweaks
-//                        cTweaks.withUnsafeMutableBufferPointer { buffer in
-//                            do_fun(buffer.baseAddress, Int32(buffer.count - 1))
-//                        }
+                        let tweaks = enabledTweaks()
 
-                        // Deallocate the C-style strings after use to avoid memory leaks
-//                        cTweaks.forEach { free($0) }
+                        // Convert the Swift array of strings to a C-style array of char*
+                        var cTweaks: [UnsafeMutablePointer<CChar>?] = tweaks.map { strdup($0) }
+                        // Add a null pointer at the end to signal the end of the array
+                        cTweaks.append(nil)
+
+                        // Pass the C-style array to do_fun along with the count of tweaks
+                        cTweaks.withUnsafeMutableBufferPointer { buffer in
+                            do_fun(buffer.baseAddress, Int32(buffer.count - 1))
+                        }
+
+//                         Deallocate the C-style strings after use to avoid memory leaks
+                        cTweaks.forEach { free($0) }
                         do_kclose()
 //                        restartFrontboard()
                     }

