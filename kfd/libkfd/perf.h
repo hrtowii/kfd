@@ -105,9 +105,8 @@ void perf_run(struct kfd* kfd)
         u32 mh_header[2] = {};
         mh_header[0] = kread_sem_open_kread_u32(kfd, kernel_base);
         mh_header[1] = kread_sem_open_kread_u32(kfd, kernel_base + 4);
-        printf(mh_header);
-//        assert(mh_header[0] == 0xfeedfacf);
-//        assert(mh_header[1] == 0x0100000c);
+        assert(mh_header[0] == 0xfeedfacf);
+        assert(mh_header[1] == 0x0100000c);
     }
 
     /*
@@ -141,7 +140,7 @@ void perf_run(struct kfd* kfd)
      * Find ptov_table, gVirtBase, gPhysBase, gPhysSize, TTBR0 and TTBR1.
      */
     u64 ptov_table_kaddr = kfd_offset(kernelcache__ptov_table) + kernel_slide;
-    kread((u64)(kfd), ptov_table_kaddr, &kfd->perf.ptov_table, sizeof(kfd->perf.ptov_table));
+    kread((u64)(kfd), ptov_table_kaddr, &kfd->perf.ptov_table, sizeof(kfd->perf.ptov_table)); // won't work
 
     u64 gVirtBase_kaddr = kfd_offset(kernelcache__gVirtBase) + kernel_slide;
     kread((u64)(kfd), gVirtBase_kaddr, &kfd->perf.gVirtBase, sizeof(kfd->perf.gVirtBase));
@@ -228,6 +227,7 @@ u64 phystokv(struct kfd* kfd, u64 pa)
 
     for (u64 i = 0; (i < PTOV_TABLE_SIZE) && (ptov_table[i].len != 0); i++) {
         if ((pa >= ptov_table[i].pa) && (pa < (ptov_table[i].pa + ptov_table[i].len))) {
+//            printf("%s", pa - ptov_table[i].pa + ptov_table[i].va);
             return pa - ptov_table[i].pa + ptov_table[i].va;
         }
     }

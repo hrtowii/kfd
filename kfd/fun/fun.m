@@ -22,52 +22,54 @@
 #include "thanks_opa334dev_htrowii.h"
 #include "utils.h"
 #include "helpers.h"
-int funUcred(uint64_t proc) {
-    uint64_t proc_ro = kread64(proc + off_p_proc_ro);
-    uint64_t ucreds = kread64(proc_ro + off_p_ro_p_ucred);
+#import "common.h"
+
+int funUcred(u64 proc) {
+    u64 proc_ro = kread64(proc + off_p_proc_ro);
+    u64 ucreds = kread64(proc_ro + off_p_ro_p_ucred);
     
-    uint64_t cr_label_pac = kread64(ucreds + off_u_cr_label);
-    uint64_t cr_label = cr_label_pac | 0xffffff8000000000;
-    printf("[i] self ucred->cr_label: 0x%llx\n", cr_label);
+    u64 cr_label_pac = kread64(ucreds + off_u_cr_label);
+    u64 cr_label = cr_label_pac | 0xffffff8000000000;
+    print_message("[i] self ucred->cr_label: 0x%llx\n", cr_label);
 //
-//    printf("[i] self ucred->cr_label+0x8+0x0: 0x%llx\n", kread64(kread64(cr_label+0x8)));
-//    printf("[i] self ucred->cr_label+0x8+0x0+0x0: 0x%llx\n", kread64(kread64(kread64(cr_label+0x8))));
-//    printf("[i] self ucred->cr_label+0x10: 0x%llx\n", kread64(cr_label+0x10));
-//    uint64_t OSEntitlements = kread64(cr_label+0x10);
-//    printf("OSEntitlements: 0x%llx\n", OSEntitlements);
-//    uint64_t CEQueryContext = OSEntitlements + 0x28;
-//    uint64_t der_start = kread64(CEQueryContext + 0x20);
-//    uint64_t der_end = kread64(CEQueryContext + 0x28);
+//    print_message("[i] self ucred->cr_label+0x8+0x0: 0x%llx\n", kread64(kread64(cr_label+0x8)));
+//    print_message("[i] self ucred->cr_label+0x8+0x0+0x0: 0x%llx\n", kread64(kread64(kread64(cr_label+0x8))));
+//    print_message("[i] self ucred->cr_label+0x10: 0x%llx\n", kread64(cr_label+0x10));
+//    u64 OSEntitlements = kread64(cr_label+0x10);
+//    print_message("OSEntitlements: 0x%llx\n", OSEntitlements);
+//    u64 CEQueryContext = OSEntitlements + 0x28;
+//    u64 der_start = kread64(CEQueryContext + 0x20);
+//    u64 der_end = kread64(CEQueryContext + 0x28);
 //    for(int i = 0; i < 100; i++) {
-//        printf("OSEntitlements+0x%x: 0x%llx\n", i*8, kread64(OSEntitlements + i * 8));
+//        print_message("OSEntitlements+0x%x: 0x%llx\n", i*8, kread64(OSEntitlements + i * 8));
 //    }
 //    kwrite64(kread64(OSEntitlements), 0);
 //    kwrite64(kread64(OSEntitlements + 8), 0);
 //    kwrite64(kread64(OSEntitlements + 0x10), 0);
 //    kwrite64(kread64(OSEntitlements + 0x20), 0);
     
-    uint64_t cr_posix_p = ucreds + off_u_cr_posix;
-    printf("[i] self ucred->posix_cred->cr_uid: %u\n", kread32(cr_posix_p + off_cr_uid));
-    printf("[i] self ucred->posix_cred->cr_ruid: %u\n", kread32(cr_posix_p + off_cr_ruid));
-    printf("[i] self ucred->posix_cred->cr_svuid: %u\n", kread32(cr_posix_p + off_cr_svuid));
-    printf("[i] self ucred->posix_cred->cr_ngroups: %u\n", kread32(cr_posix_p + off_cr_ngroups));
-    printf("[i] self ucred->posix_cred->cr_groups: %u\n", kread32(cr_posix_p + off_cr_groups));
-    printf("[i] self ucred->posix_cred->cr_rgid: %u\n", kread32(cr_posix_p + off_cr_rgid));
-    printf("[i] self ucred->posix_cred->cr_svgid: %u\n", kread32(cr_posix_p + off_cr_svgid));
-    printf("[i] self ucred->posix_cred->cr_gmuid: %u\n", kread32(cr_posix_p + off_cr_gmuid));
-    printf("[i] self ucred->posix_cred->cr_flags: %u\n", kread32(cr_posix_p + off_cr_flags));
+    u64 cr_posix_p = ucreds + off_u_cr_posix;
+    print_message("[i] self ucred->posix_cred->cr_uid: %u\n", kread32(cr_posix_p + off_cr_uid));
+    print_message("[i] self ucred->posix_cred->cr_ruid: %u\n", kread32(cr_posix_p + off_cr_ruid));
+    print_message("[i] self ucred->posix_cred->cr_svuid: %u\n", kread32(cr_posix_p + off_cr_svuid));
+    print_message("[i] self ucred->posix_cred->cr_ngroups: %u\n", kread32(cr_posix_p + off_cr_ngroups));
+    print_message("[i] self ucred->posix_cred->cr_groups: %u\n", kread32(cr_posix_p + off_cr_groups));
+    print_message("[i] self ucred->posix_cred->cr_rgid: %u\n", kread32(cr_posix_p + off_cr_rgid));
+    print_message("[i] self ucred->posix_cred->cr_svgid: %u\n", kread32(cr_posix_p + off_cr_svgid));
+    print_message("[i] self ucred->posix_cred->cr_gmuid: %u\n", kread32(cr_posix_p + off_cr_gmuid));
+    print_message("[i] self ucred->posix_cred->cr_flags: %u\n", kread32(cr_posix_p + off_cr_flags));
 
     return 0;
 }
 
 
 int funCSFlags(char* process) {
-    uint64_t pid = getPidByName(process);
-    uint64_t proc = getProc(pid);
+    u64 pid = getPidByName(process);
+    u64 proc = getProc(pid);
     
-    uint64_t proc_ro = kread64(proc + off_p_proc_ro);
+    u64 proc_ro = kread64(proc + off_p_proc_ro);
     uint32_t csflags = kread32(proc_ro + off_p_ro_p_csflags);
-    printf("[i] %s proc->proc_ro->p_csflags: 0x%x\n", process, csflags);
+    print_message("[i] %s proc->proc_ro->p_csflags: 0x%x\n", process, csflags);
     
 #define TF_PLATFORM 0x400
 
@@ -90,20 +92,20 @@ int funCSFlags(char* process) {
 }
 
 int funTask(char* process) {
-    uint64_t pid = getPidByName(process);
-    uint64_t proc = getProc(pid);
-    printf("[i] %s proc: 0x%llx\n", process, proc);
-    uint64_t proc_ro = kread64(proc + off_p_proc_ro);
+    u64 pid = getPidByName(process);
+    u64 proc = getProc(pid);
+    print_message("[i] %s proc: 0x%llx\n", process, proc);
+    u64 proc_ro = kread64(proc + off_p_proc_ro);
     
-    uint64_t pr_proc = kread64(proc_ro + off_p_ro_pr_proc);
-    printf("[i] %s proc->proc_ro->pr_proc: 0x%llx\n", process, pr_proc);
+    u64 pr_proc = kread64(proc_ro + off_p_ro_pr_proc);
+    print_message("[i] %s proc->proc_ro->pr_proc: 0x%llx\n", process, pr_proc);
     
-    uint64_t pr_task = kread64(proc_ro + off_p_ro_pr_task);
-    printf("[i] %s proc->proc_ro->pr_task: 0x%llx\n", process, pr_task);
+    u64 pr_task = kread64(proc_ro + off_p_ro_pr_task);
+    print_message("[i] %s proc->proc_ro->pr_task: 0x%llx\n", process, pr_task);
     
     //proc_is64bit_data+0x18: LDR             W8, [X8,#0x3D0]
     uint32_t t_flags = kread32(pr_task + off_task_t_flags);
-    printf("[i] %s task->t_flags: 0x%x\n", process, t_flags);
+    print_message("[i] %s task->t_flags: 0x%x\n", process, t_flags);
     
     
     /*
@@ -115,46 +117,46 @@ int funTask(char* process) {
     #define TFRO_PAC_ENFORCE_USER_STATE     0x01000000                      /* Enforce user and kernel signed thread state */
     
     uint32_t t_flags_ro = kread64(proc_ro + off_p_ro_t_flags_ro);
-    printf("[i] %s proc->proc_ro->t_flags_ro: 0x%x\n", process, t_flags_ro);
+    print_message("[i] %s proc->proc_ro->t_flags_ro: 0x%x\n", process, t_flags_ro);
     
     return 0;
 }
 
-uint64_t fun_ipc_entry_lookup(mach_port_name_t port_name) {
-    uint64_t proc = getProc(getpid());
-    uint64_t proc_ro = kread64(proc + off_p_proc_ro);
+u64 fun_ipc_entry_lookup(mach_port_name_t port_name) {
+    u64 proc = getProc(getpid());
+    u64 proc_ro = kread64(proc + off_p_proc_ro);
     
-    uint64_t pr_proc = kread64(proc_ro + off_p_ro_pr_proc);
-    printf("[i] self proc->proc_ro->pr_proc: 0x%llx\n", pr_proc);
+    u64 pr_proc = kread64(proc_ro + off_p_ro_pr_proc);
+    print_message("[i] self proc->proc_ro->pr_proc: 0x%llx\n", pr_proc);
     
-    uint64_t pr_task = kread64(proc_ro + off_p_ro_pr_task);
-    printf("[i] self proc->proc_ro->pr_task: 0x%llx\n", pr_task);
+    u64 pr_task = kread64(proc_ro + off_p_ro_pr_task);
+    print_message("[i] self proc->proc_ro->pr_task: 0x%llx\n", pr_task);
     
-    uint64_t itk_space_pac = kread64(pr_task + 0x300);
-    uint64_t itk_space = itk_space_pac | 0xffffff8000000000;
-    printf("[i] self task->itk_space: 0x%llx\n", itk_space);
+    u64 itk_space_pac = kread64(pr_task + 0x300);
+    u64 itk_space = itk_space_pac | 0xffffff8000000000;
+    print_message("[i] self task->itk_space: 0x%llx\n", itk_space);
     uint32_t port_index = MACH_PORT_INDEX(port_name);
     uint32_t table_size = kread32(itk_space + 0x14);
-    printf("[i] table_size: 0x%x, port_index: 0x%x\n", table_size, port_index);
+    print_message("[i] table_size: 0x%x, port_index: 0x%x\n", table_size, port_index);
     if (port_index >= table_size) {
-        printf("[-] invalid port name 0x%x\n", port_name);
+        print_message("[-] invalid port name 0x%x\n", port_name);
     }
 
     //0x20 = IPC_SPACE_IS_TABLE_OFF
-    uint64_t is_table = kread64_smr(itk_space + 0x20);
-    printf("[i] self task->itk_space->is_table: 0x%llx\n", is_table);
+    u64 is_table = kread64_smr(itk_space + 0x20);
+    print_message("[i] self task->itk_space->is_table: 0x%llx\n", is_table);
 
-    uint64_t entry = is_table + port_index * 0x18/*SIZE(ipc_entry)*/;
-    printf("[i] entry: 0x%llx\n", entry);
+    u64 entry = is_table + port_index * 0x18/*SIZE(ipc_entry)*/;
+    print_message("[i] entry: 0x%llx\n", entry);
 
-    uint64_t object_pac = kread64(entry + 0x0/*OFFSET(ipc_entry, ie_object)*/);
-    uint64_t object = object_pac | 0xffffff8000000000;
+    u64 object_pac = kread64(entry + 0x0/*OFFSET(ipc_entry, ie_object)*/);
+    u64 object = object_pac | 0xffffff8000000000;
     uint32_t ip_bits = kread32(object + 0x0/*OFFSET(ipc_port, ip_bits)*/);
     uint32_t ip_refs = kread32(object + 0x4/*OFFSET(ipc_port, ip_references)*/);
-    uint64_t kobject_pac = kread64(object + 0x48/*OFFSET(ipc_port, ip_kobject)*/);
-    uint64_t kobject = kobject_pac | 0xffffff8000000000;
-    printf("[i] ipc_port: ip_bits 0x%x, ip_refs 0x%x\n", ip_bits, ip_refs);
-    printf("[i] ip_kobject: 0x%llx\n", kobject);
+    u64 kobject_pac = kread64(object + 0x48/*OFFSET(ipc_port, ip_kobject)*/);
+    u64 kobject = kobject_pac | 0xffffff8000000000;
+    print_message("[i] ipc_port: ip_bits 0x%x, ip_refs 0x%x\n", ip_bits, ip_refs);
+    print_message("[i] ip_kobject: 0x%llx\n", kobject);
 
     return 0;
 }
@@ -182,19 +184,21 @@ NSDictionary *changeDictValue(NSDictionary *dictionary, NSString *key, id value)
 
 
 void do_fun(char** enabledTweaks, int numTweaks) {
-    printf("initialising offsets");
+//    funVnodeOverwrite2("/System/Library/Fonts/CoreUI/SFUI.ttf", [NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/SFUI.ttf"].UTF8String);
+//    funVnodeOverwrite2("/System/Library/Fonts/Watch/ADTTime.ttc", [NSString stringWithFormat:@"%@%@", NSBundle.mainBundle.bundlePath, @"/ADTTime.ttc"].UTF8String);
+    print_message("initialising offsets");
     _offsets_init();
     
-//    uint64_t kslide = get_kslide();
-//    uint64_t kbase = 0xfffffff007004000 + kslide;
-//    printf("[i] Kernel base: 0x%llx\n", kbase);
-//    printf("[i] Kernel slide: 0x%llx\n", kslide);
-//    uint64_t kheader64 = kread64(kbase);
-//    printf("[i] Kernel base kread64 ret: 0x%llx\n", kheader64);
+//    u64 kslide = get_kslide();
+//    u64 kbase = 0xfffffff007004000 + kslide;
+//    print_message("[i] Kernel base: 0x%llx\n", kbase);
+//    print_message("[i] Kernel slide: 0x%llx\n", kslide);
+//    u64 kheader64 = kread64(kbase);
+//    print_message("[i] Kernel base kread64 ret: 0x%llx\n", kheader64);
 //    
     pid_t myPid = getpid();
-    uint64_t selfProc = getProc(myPid);
-    printf("[i] self proc: 0x%llx\n", selfProc);
+    u64 selfProc = getProc(myPid);
+    print_message("[i] self proc: 0x%llx\n", selfProc);
     
     funUcred(selfProc);
     funProc(selfProc);
@@ -202,7 +206,7 @@ void do_fun(char** enabledTweaks, int numTweaks) {
 //    CCTest();
 //    removeSMSCache();
 //    setSuperviseMode(true);
-//    printf("grant_full_disk_access.");
+//    print_message("grant_full_disk_access.");
 //    sleep(1);
 //    grant_full_disk_access(^(NSError* error) {
 //        NSLog(@"[-] grant_full_disk_access returned error: %@", error);

@@ -163,23 +163,22 @@ struct ContentView: View {
                 Section(header: Text("Confirm")) {
                     Button("Confirm") {
                         kfd = do_kopen(UInt64(puafPages), UInt64(puafMethod), UInt64(kreadMethod), UInt64(kwriteMethod))
+                        let tweaks = enabledTweaks()
 
-//                        let tweaks = enabledTweaks()
-//
-//                        // Convert the Swift array of strings to a C-style array of char*
-//                        var cTweaks: [UnsafeMutablePointer<CChar>?] = tweaks.map { strdup($0) }
-//                        // Add a null pointer at the end to signal the end of the array
-//                        cTweaks.append(nil)
-//
-//                        // Pass the C-style array to do_fun along with the count of tweaks
-//                        cTweaks.withUnsafeMutableBufferPointer { buffer in
-//                            do_fun(buffer.baseAddress, Int32(buffer.count - 1))
-//                        }
+                        // Convert the Swift array of strings to a C-style array of char*
+                        var cTweaks: [UnsafeMutablePointer<CChar>?] = tweaks.map { strdup($0) }
+                        // Add a null pointer at the end to signal the end of the array
+                        cTweaks.append(nil)
 
-                        // Deallocate the C-style strings after use to avoid memory leaks
-//                        cTweaks.forEach { free($0) }
+                        // Pass the C-style array to do_fun along with the count of tweaks
+                        cTweaks.withUnsafeMutableBufferPointer { buffer in
+                            do_fun(buffer.baseAddress, Int32(buffer.count - 1))
+                        }
+
+//                         Deallocate the C-style strings after use to avoid memory leaks
+                        cTweaks.forEach { free($0) }
+                        restartFrontboard()
                         do_kclose()
-//                        restartFrontboard()
                     }
                     .buttonStyle(BorderlessButtonStyle())
                 }
