@@ -55,8 +55,6 @@ int ResSet16(NSInteger height, NSInteger width) {
     
     uint64_t orig_to_v_data = createFolderAndRedirect(var_tmp_vnode, mntPath);
     
-    
-    //iPhone 14 Pro Max Resolution
     setResolution([mntPath stringByAppendingString:@"/com.apple.iokit.IOMobileGraphicsFamily.plist"], height, width);
     
     UnRedirectAndRemoveFolder(orig_to_v_data, mntPath);
@@ -69,12 +67,6 @@ int ResSet16(NSInteger height, NSInteger width) {
     remove([mntPath stringByAppendingString:@"/com.apple.iokit.IOMobileGraphicsFamily.plist"].UTF8String);
     printf("symlink ret: %d\n", symlink("/var/tmp/com.apple.iokit.IOMobileGraphicsFamily.plist", [mntPath stringByAppendingString:@"/com.apple.iokit.IOMobileGraphicsFamily.plist"].UTF8String));
     UnRedirectAndRemoveFolder(orig_to_v_data, mntPath);
-    
-    //3. xpc restart
-//    do_kclose();
-//    sleep(1);
-//    xpc_crasher("com.apple.cfprefsd.daemon");
-//    xpc_crasher("com.apple.backboard.TouchDeliveryPolicyServer");
     
     return 0;
 }
@@ -148,33 +140,7 @@ int setSuperviseMode(BOOL enable) {
     NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted"];
     // /var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles/CloudConfigurationDetails.plist
     
-    uint64_t systemgroup_vnode = getVnodeSystemGroup();
-    
-    //must enter 3 subdirectories
-    uint64_t configurationprofiles_vnode = findChildVnodeByVnode(systemgroup_vnode, "systemgroup.com.apple.configurationprofiles");
-    while(1) {
-        if(configurationprofiles_vnode != 0)
-            break;
-        configurationprofiles_vnode = findChildVnodeByVnode(systemgroup_vnode, "systemgroup.com.apple.configurationprofiles");
-    }
-    printf("[i] /var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles vnode: 0x%llx\n", configurationprofiles_vnode);
-    
-    configurationprofiles_vnode = findChildVnodeByVnode(configurationprofiles_vnode, "Library");
-    while(1) {
-        if(configurationprofiles_vnode != 0)
-            break;
-        configurationprofiles_vnode = findChildVnodeByVnode(configurationprofiles_vnode, "Library");
-    }
-    printf("[i] /var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library vnode: 0x%llx\n", configurationprofiles_vnode);
-    
-    configurationprofiles_vnode = findChildVnodeByVnode(configurationprofiles_vnode, "ConfigurationProfiles");
-    while(1) {
-        if(configurationprofiles_vnode != 0)
-            break;
-        configurationprofiles_vnode = findChildVnodeByVnode(configurationprofiles_vnode, "ConfigurationProfiles");
-    }
-    printf("[i] /var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles vnode: 0x%llx\n", configurationprofiles_vnode);
-    
+    int configurationprofiles_vnode = getVnodeAtPathByChdir("/var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles");
     uint64_t orig_to_v_data = createFolderAndRedirect(configurationprofiles_vnode, mntPath);
     
     NSArray* dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath error:NULL];
@@ -380,42 +346,11 @@ void hexdump(void *mem, unsigned int len)
 }
 
 void DynamicCOW(void) {
-    
     _offsets_init();
-    
     xpc_crasher("com.apple.mobilegestalt.xpc");
-    
-    //1. find "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist"
-    //    uint64_t var_vnode = getVnodeVar();
-    //    printf("found var vnode\n");
     uint64_t vnode = getVnodeAtPathByChdir("/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/");
-    //    printf("found containers vnode\n");
-    //    printf("[i] /var/containers vnode: 0x%llx\n", var_containers_vnode);
-    //
-    //    uint64_t Shared_vnode = findChildVnodeByVnode(var_containers_vnode, "Shared");
-    //    printf("found Shared vnode\n");
-    //    printf("[i] /var/containers/Shared vnode: 0x%llx\n", Shared_vnode);
-    //
-    //    uint64_t SystemGroup_vnode = findChildVnodeByVnode(Shared_vnode, "SystemGroup");
-    //    printf("found SystemGroup vnode\n");
-    //    printf("[i] /var/containers/Shared/SystemGroup vnode: 0x%llx\n", SystemGroup_vnode); sleep(1);
-    //
     NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted/"];
     uint64_t orig_to_v_data = createFolderAndRedirect(vnode, mntPath);
-    //
-    //    uint64_t _cache_vnode = findChildVnodeByVnodeWithBlock(SystemGroup_vnode, "Caches", ^(uint64_t vn, bool* stop){
-    //        printf("found cache vnode\n");
-    //        printf("[i] /var/containers/Shared/SystemGroup vnode: 0x%llx\n", vn);
-    //
-    //        uint64_t orig_to_v_data = createFolderAndRedirect(vn, mntPath);
-    //
-    //        if (orig_to_v_data == -1) {
-    //            return;
-    //        }
-    //
-    //        printf("created var vnode folder\n");
-    //
-    
     
     [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath error:NULL] enumerateObjectsUsingBlock:^(NSString * _Nonnull __strong content, NSUInteger index, BOOL * _Nonnull stop2) {
         NSLog(@"element: %@", content);
@@ -431,8 +366,6 @@ void DynamicCOW(void) {
             NSPropertyListFormat* plistFormat = NULL;
             NSMutableDictionary *temp = [NSPropertyListSerialization propertyListWithData:tempData options:NSPropertyListMutableContainersAndLeaves format:plistFormat error:&error];
             
-//            hexdump([tempData bytes], [tempData length]);
-            
             NSMutableDictionary* cacheExtra = [temp valueForKey:@"CacheExtra"];
             
             [cacheExtra enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull __strong key, id  _Nonnull __strong value, BOOL * _Nonnull stop3) {
@@ -440,7 +373,6 @@ void DynamicCOW(void) {
                 if ([key isEqualToString:@"oPeik/9e8lQWMszEjbPzng"]) {
                     printf("found key\n");
                     [value setValue:[NSNumber numberWithInt:2556] forKey: @"ArtworkDeviceSubType"]; // 2532, 2556, 2796
-//                    [value setValue:@"phone" forKey: @"ArtworkDeviceIdiom"]; bricks your fucking phone don't do this please PLEASE
                     *stop3 = true;
                 }
             }];
@@ -463,8 +395,6 @@ void DynamicCOW(void) {
             
             // Create a new NSData instance with the remaining data
             NSData *data = _tempData;
-            
-//            hexdump([data bytes], [data length]);
             
             NSLog(@"error serializing to xml: %@", error2);
             
