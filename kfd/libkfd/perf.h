@@ -227,7 +227,6 @@ u64 phystokv(struct kfd* kfd, u64 pa)
 
     for (u64 i = 0; (i < PTOV_TABLE_SIZE) && (ptov_table[i].len != 0); i++) {
         if ((pa >= ptov_table[i].pa) && (pa < (ptov_table[i].pa + ptov_table[i].len))) {
-//            printf("%s", pa - ptov_table[i].pa + ptov_table[i].va);
             return pa - ptov_table[i].pa + ptov_table[i].va;
         }
     }

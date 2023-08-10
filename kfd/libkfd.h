@@ -154,7 +154,7 @@ struct kfd* kfd_init(u64 puaf_pages, u64 puaf_method, u64 kread_method, u64 kwri
     info_init(kfd);
     puaf_init(kfd, puaf_pages, puaf_method);
     krkw_init(kfd, kread_method, kwrite_method);
-    perf_init(kfd);
+//    perf_init(kfd);
     return kfd;
 }
 
@@ -183,7 +183,7 @@ u64 kopen(u64 puaf_pages, u64 puaf_method, u64 kread_method, u64 kwrite_method)
     puaf_run(kfd);
     krkw_run(kfd);
     info_run(kfd);
-    perf_run(kfd);
+//    perf_run(kfd);
     puaf_cleanup(kfd);
 
     timer_end();
