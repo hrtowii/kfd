@@ -208,6 +208,7 @@ void perf_free(struct kfd* kfd)
      * Then, close it and deallocate the shared page.
      * This leaves the first perfmon device "pmdv_allocated", which is fine.
      */
+    usleep(1000);
     kwrite((u64)(kfd), &kfd->perf.dev.si_rdev_buffer, kfd->perf.dev.si_rdev_kaddr, sizeof(kfd->perf.dev.si_rdev_buffer));
     assert_bsd(close(kfd->perf.dev.fd));
     assert_mach(vm_deallocate(mach_task_self(), kfd->perf.shared_page.uaddr, kfd->perf.shared_page.size));

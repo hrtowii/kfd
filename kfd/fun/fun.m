@@ -161,26 +161,6 @@ u64 fun_ipc_entry_lookup(mach_port_name_t port_name) {
     return 0;
 }
 
-// Function to find files with specific extensions in a directory, doesn't work??? wtf?
-NSArray<NSString *> *findFilesWithExtensions(NSArray<NSString *> *extensions, NSString *directory) {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray<NSString *> *fileNames = [fileManager contentsOfDirectoryAtPath:directory error:nil];
-    
-    NSMutableArray<NSString *> *filePaths = [NSMutableArray array];
-    for (NSString *fileName in fileNames) {
-        if ([extensions containsObject:fileName.pathExtension]) {
-            [filePaths addObject:[directory stringByAppendingPathComponent:fileName]];
-        }
-    }
-    
-    return filePaths;
-}
-
-NSDictionary *changeDictValue(NSDictionary *dictionary, NSString *key, id value) {
-    NSMutableDictionary *mutableDictionary = [dictionary mutableCopy];
-    [mutableDictionary setValue:value forKey:key];
-    return [mutableDictionary copy];
-}
 
 
 void do_fun(char** enabledTweaks, int numTweaks) {
@@ -201,7 +181,7 @@ void do_fun(char** enabledTweaks, int numTweaks) {
     print_message("[i] self proc: 0x%llx\n", selfProc);
     
     funUcred(selfProc);
-    funProc(selfProc);
+//    funProc(selfProc);
     
 //    CCTest();
 //    removeSMSCache();

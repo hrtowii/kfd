@@ -177,7 +177,7 @@ struct ContentView: View {
 
 //                         Deallocate the C-style strings after use to avoid memory leaks
                         cTweaks.forEach { free($0) }
-                        restartFrontboard()
+//                        restartBackboard()
                         do_kclose()
                     }
                     .buttonStyle(BorderlessButtonStyle())

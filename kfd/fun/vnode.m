@@ -16,18 +16,25 @@
 #include <sys/mman.h>
 #include <Foundation/Foundation.h>
 #include "thanks_opa334dev_htrowii.h"
+#include "common.h"
 
 uint64_t getVnodeAtPath(char* filename) {
     int file_index = open(filename, O_RDONLY);
     if (file_index == -1) return -1;
     
     uint64_t proc = getProc(getpid());
-
+    
+    print_message("kread filedesc_pac");
+    usleep(250);
     uint64_t filedesc_pac = kread64(proc + off_p_pfd);
     uint64_t filedesc = filedesc_pac | 0xffffff8000000000;
+    print_message("kread openedfile");
+    usleep(250);
     uint64_t openedfile = kread64(filedesc + (8 * file_index));
+    print_message("kread fileglob_pac");
     uint64_t fileglob_pac = kread64(openedfile + off_fp_glob);
     uint64_t fileglob = fileglob_pac | 0xffffff8000000000;
+    print_message("kread vnode_pac");
     uint64_t vnode_pac = kread64(fileglob + off_fg_data);
     uint64_t vnode = vnode_pac | 0xffffff8000000000;
     

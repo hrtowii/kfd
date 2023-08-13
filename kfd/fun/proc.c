@@ -14,9 +14,12 @@
 #import "common.h"
 
 u64 getProc(pid_t pid) {
+    usleep(200);
+    print_message("get_kernproc");
     u64 proc = get_kernproc();
     
     while (true) {
+        usleep(200);
         if(kread32(proc + off_p_pid) == pid) {
             return proc;
         }

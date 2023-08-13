@@ -85,6 +85,7 @@ uint32_t vm_header_get_nentries(u64 vm_header_ptr)
 void vm_entry_get_range(u64 vm_entry_ptr, u64 *start_address_out, u64 *end_address_out)
 {
     u64 range[2];
+    usleep(750);
     kreadbuf(vm_entry_ptr + 0x10, &range[0], sizeof(range));
     if (start_address_out) *start_address_out = range[0];
     if (end_address_out) *end_address_out = range[1];
@@ -114,6 +115,7 @@ void vm_map_iterate_entries(u64 vm_map_ptr, void (^itBlock)(u64 start, u64 end, 
 u64 vm_map_find_entry(u64 vm_map_ptr, u64 address)
 {
     __block u64 found_entry = 0;
+    usleep(500);
         vm_map_iterate_entries(vm_map_ptr, ^(u64 start, u64 end, u64 entry, BOOL *stop) {
             if (address >= start && address < end) {
                 found_entry = entry;
@@ -146,7 +148,7 @@ char* funVnodeRead(*file) {
     printf("reading %s", file);
     int file_index = open(file, O_RDONLY);
     if (file_index == -1)  {
-        printf("to file nonexistent\n)");
+        printf("to file nonexistent\n");
         return -1;
     }
     off_t file_size = lseek(file_index, 0, SEEK_END);
@@ -190,7 +192,7 @@ u64 funVnodeOverwrite2(char* to, char* from) {
     printf("writing to %s", to);
     int to_file_index = open(to, O_RDONLY);
     if (to_file_index == -1)  {
-        printf("\nto file nonexistent\n)");
+        printf("\nto file nonexistent\n");
         return -1;
     }
     

