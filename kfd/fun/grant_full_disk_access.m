@@ -14,7 +14,7 @@
 #import "vnode.h"
 #import "thanks_opa334dev_htrowii.h"
 
-typedef NSObject* xpc_object_t;
+//typedef NSObject* xpc_object_t;
 typedef xpc_object_t xpc_connection_t;
 typedef void (^xpc_handler_t)(xpc_object_t object);
 xpc_object_t xpc_dictionary_create(const char* const _Nonnull* keys,

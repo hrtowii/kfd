@@ -182,7 +182,7 @@ u64 kopen(u64 puaf_pages, u64 puaf_method, u64 kread_method, u64 kwrite_method)
     struct kfd* kfd = kfd_init(puaf_pages, puaf_method, kread_method, kwrite_method);
     puaf_run(kfd);
     krkw_run(kfd);
-    info_run(kfd);
+//    info_run(kfd);
 //    perf_run(kfd);
     puaf_cleanup(kfd);
 
