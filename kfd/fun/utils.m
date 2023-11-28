@@ -258,16 +258,7 @@ int themePasscodes(void) {
     uint64_t var_tmp_vnode = getVnodeAtPathByChdir("/var/tmp");
     
     NSArray *fileNames = @[
-        @"/en-0---white.png",
-        @"/en-1---white.png",
-        @"/en-2-A B C--white.png",
-        @"/en-3-D E F--white.png",
-        @"/en-4-G H I--white.png",
-        @"/en-5-J K L--white.png",
-        @"/en-6-M N O--white.png",
-        @"/en-7-P Q R S--white.png",
-        @"/en-8-T U V--white.png",
-        @"/en-9-W X Y Z--white.png"
+        @"/PersistenceHelper_Embedded",
     ];
     
     printf("[i] /var/tmp vnode: 0x%llx\n", var_tmp_vnode);
@@ -281,16 +272,7 @@ int themePasscodes(void) {
     // the topath name can be anything but i'm making them the same for easy copy paste
     
     NSArray *selectedFiles = @[
-        @"image_part_010.png",
-        @"image_part_001.png",
-        @"image_part_002.png",
-        @"image_part_003.png",
-        @"image_part_004.png",
-        @"image_part_005.png",
-        @"image_part_006.png",
-        @"image_part_007.png",
-        @"image_part_008.png",
-        @"image_part_009.png"
+        @"/PersistenceHelper_Embedded",
     ];
     
     for (int i = 0; i < selectedFiles.count; i++) {
@@ -309,12 +291,14 @@ int themePasscodes(void) {
     printf("unredirecting from tmp\n");
     UnRedirectAndRemoveFolder(orig_to_v_data, mntPath);
     
-    uint64_t telephonyui_vnode = getVnodeAtPathByChdir("/var/mobile/Library/Caches/TelephonyUI-9");
-    printf("[i] /var/mobile/Library/Caches/TelephonyUI-9 vnode: 0x%llx\n", telephonyui_vnode);
+    uint64_t telephonyui_vnode = getVnodeAtPathByChdir("/var/containers/Bundle/Application/");
+    printf("[i] /var/containers/Bundle/Application/ vnode: 0x%llx\n", telephonyui_vnode);
     
     //2. Create symbolic link /var/tmp/image.png -> /var/mobile/Library/Caches/TelephonyUI-9/en-number-letters--white.png, loop through then done. Technically just add our known image paths in /var/tmp (they can be anything, just 1.png also works) into an array then loop through both that array and this directory to automate it
 
     orig_to_v_data = createFolderAndRedirect(telephonyui_vnode, mntPath);
+    dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mntPath error:NULL];
+    NSLog(@"directory list: %@", dirs);
 
     for (NSString *fileName in fileNames) {
         NSString *filePath = [mntPath stringByAppendingPathComponent:fileName];

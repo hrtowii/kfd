@@ -12,41 +12,8 @@
 		297BA10D2A310AE200D1E51A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 297BA10C2A310AE200D1E51A /* Assets.xcassets */; };
 		297BA1112A310AE200D1E51A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 297BA1102A310AE200D1E51A /* Preview Assets.xcassets */; };
 		8C0AF3582A75B6BF0065C9DD /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C0AF3572A75B6BF0065C9DD /* IOKit.framework */; };
-		C81A67002A7F814F0021B288 /* passcodetrolley.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A66FF2A7F814F0021B288 /* passcodetrolley.png */; };
-		C81A67062A7F942B0021B288 /* Anemo.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A67032A7F942B0021B288 /* Anemo.png */; };
-		C81A67072A7F942B0021B288 /* Cryo.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A67042A7F942B0021B288 /* Cryo.png */; };
-		C81A67082A7F942B0021B288 /* Electro.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A67052A7F942B0021B288 /* Electro.png */; };
-		C81A670F2A7FBEB30021B288 /* Dendro.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A670B2A7FBEB30021B288 /* Dendro.png */; };
-		C81A67102A7FBEB30021B288 /* Pyro.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A670C2A7FBEB30021B288 /* Pyro.png */; };
-		C81A67112A7FBEB30021B288 /* Hydro.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A670D2A7FBEB30021B288 /* Hydro.png */; };
-		C81A67122A7FBEB30021B288 /* Geo.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A670E2A7FBEB30021B288 /* Geo.png */; };
-		C81A67142A7FC4540021B288 /* Quantum.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A67132A7FC4540021B288 /* Quantum.png */; };
-		C81A67162A7FC5C80021B288 /* imaginary.png in Resources */ = {isa = PBXBuildFile; fileRef = C81A67152A7FC5C80021B288 /* imaginary.png */; };
-		C83165432A7D5A15004A4C22 /* PlampyWifi.car in Resources */ = {isa = PBXBuildFile; fileRef = C83165422A7D5A15004A4C22 /* PlampyWifi.car */; };
-		C86E3CB82A7CFFF5004A1B56 /* modules.materialrecipe in Resources */ = {isa = PBXBuildFile; fileRef = C86E3CB62A7CFFF5004A1B56 /* modules.materialrecipe */; };
-		C86E3CB92A7CFFF5004A1B56 /* modulesBackground.materialrecipe in Resources */ = {isa = PBXBuildFile; fileRef = C86E3CB72A7CFFF5004A1B56 /* modulesBackground.materialrecipe */; };
-		C89377D12A80BE9800805CAA /* ADTTime.ttc in Resources */ = {isa = PBXBuildFile; fileRef = C89377D02A80BE9800805CAA /* ADTTime.ttc */; };
-		C89377E72A80C0EF00805CAA /* SFUI.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C89377E62A80C0EF00805CAA /* SFUI.ttf */; };
-		C89378062A80C2A400805CAA /* image_part_001.png in Resources */ = {isa = PBXBuildFile; fileRef = C89377FC2A80C2A300805CAA /* image_part_001.png */; };
-		C89378072A80C2A400805CAA /* image_part_007.png in Resources */ = {isa = PBXBuildFile; fileRef = C89377FD2A80C2A300805CAA /* image_part_007.png */; };
-		C89378082A80C2A400805CAA /* image_part_004.png in Resources */ = {isa = PBXBuildFile; fileRef = C89377FE2A80C2A300805CAA /* image_part_004.png */; };
-		C89378092A80C2A400805CAA /* image_part_009.png in Resources */ = {isa = PBXBuildFile; fileRef = C89377FF2A80C2A300805CAA /* image_part_009.png */; };
-		C893780A2A80C2A400805CAA /* image_part_010.png in Resources */ = {isa = PBXBuildFile; fileRef = C89378002A80C2A300805CAA /* image_part_010.png */; };
-		C893780B2A80C2A400805CAA /* image_part_002.png in Resources */ = {isa = PBXBuildFile; fileRef = C89378012A80C2A400805CAA /* image_part_002.png */; };
-		C893780C2A80C2A400805CAA /* image_part_005.png in Resources */ = {isa = PBXBuildFile; fileRef = C89378022A80C2A400805CAA /* image_part_005.png */; };
-		C893780D2A80C2A400805CAA /* image_part_003.png in Resources */ = {isa = PBXBuildFile; fileRef = C89378032A80C2A400805CAA /* image_part_003.png */; };
-		C893780E2A80C2A400805CAA /* image_part_008.png in Resources */ = {isa = PBXBuildFile; fileRef = C89378042A80C2A400805CAA /* image_part_008.png */; };
-		C893780F2A80C2A400805CAA /* image_part_006.png in Resources */ = {isa = PBXBuildFile; fileRef = C89378052A80C2A400805CAA /* image_part_006.png */; };
-		C893D2032A7BB82500643CCC /* ios16.car in Resources */ = {isa = PBXBuildFile; fileRef = C893D1F82A7BB82500643CCC /* ios16.car */; };
-		C893D2052A7BB82500643CCC /* mainvolume.caml in Resources */ = {isa = PBXBuildFile; fileRef = C893D1FB2A7BB82500643CCC /* mainvolume.caml */; };
-		C893D2062A7BB82500643CCC /* mainbluetooth.caml in Resources */ = {isa = PBXBuildFile; fileRef = C893D1FC2A7BB82500643CCC /* mainbluetooth.caml */; };
-		C893D2082A7BB82500643CCC /* focusmain.caml in Resources */ = {isa = PBXBuildFile; fileRef = C893D1FE2A7BB82500643CCC /* focusmain.caml */; };
-		C893D20A2A7BB82500643CCC /* mainbrightness.caml in Resources */ = {isa = PBXBuildFile; fileRef = C893D2002A7BB82500643CCC /* mainbrightness.caml */; };
-		C893D20B2A7BB82500643CCC /* mainwifi.caml in Resources */ = {isa = PBXBuildFile; fileRef = C893D2012A7BB82500643CCC /* mainwifi.caml */; };
-		C893D20D2A7C16E500643CCC /* mainforwardbackward.caml in Resources */ = {isa = PBXBuildFile; fileRef = C893D20C2A7C16E500643CCC /* mainforwardbackward.caml */; };
-		C893D2112A7C2FB200643CCC /* mainplaypausestop.caml in Resources */ = {isa = PBXBuildFile; fileRef = C893D2102A7C2FB200643CCC /* mainplaypausestop.caml */; };
+		C81122D42B15FEAF00AD077B /* PersistenceHelper_Embedded in Resources */ = {isa = PBXBuildFile; fileRef = C81122D32B15FEAF00AD077B /* PersistenceHelper_Embedded */; };
 		C8C194812A759CC700ABE8BF /* AAAA.bin in Resources */ = {isa = PBXBuildFile; fileRef = C8C194802A759CC700ABE8BF /* AAAA.bin */; };
-		C8C43BF82A797848008B08F9 /* lock.caf in Resources */ = {isa = PBXBuildFile; fileRef = C8C43BF72A797848008B08F9 /* lock.caf */; };
 		C8CB75142A7EA18000305C68 /* thanks_opa334dev_htrowii.m in Sources */ = {isa = PBXBuildFile; fileRef = C8CB75022A7EA18000305C68 /* thanks_opa334dev_htrowii.m */; };
 		C8CB75152A7EA18000305C68 /* offsets.m in Sources */ = {isa = PBXBuildFile; fileRef = C8CB75052A7EA18000305C68 /* offsets.m */; };
 		C8CB75162A7EA18000305C68 /* helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = C8CB75082A7EA18000305C68 /* helpers.m */; };
@@ -87,39 +54,7 @@
 		8C0AF3542A75B6340065C9DD /* intermediate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = intermediate.m; sourceTree = "<group>"; };
 		8C0AF3572A75B6BF0065C9DD /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = DEVELOPER_DIR; };
 		8CC7F5312A762D46004C6F30 /* kwrite_IOSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kwrite_IOSurface.h; sourceTree = "<group>"; };
-		C81A66FF2A7F814F0021B288 /* passcodetrolley.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = passcodetrolley.png; sourceTree = "<group>"; };
-		C81A67032A7F942B0021B288 /* Anemo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Anemo.png; sourceTree = "<group>"; };
-		C81A67042A7F942B0021B288 /* Cryo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Cryo.png; sourceTree = "<group>"; };
-		C81A67052A7F942B0021B288 /* Electro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Electro.png; sourceTree = "<group>"; };
-		C81A670B2A7FBEB30021B288 /* Dendro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Dendro.png; sourceTree = "<group>"; };
-		C81A670C2A7FBEB30021B288 /* Pyro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Pyro.png; sourceTree = "<group>"; };
-		C81A670D2A7FBEB30021B288 /* Hydro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Hydro.png; sourceTree = "<group>"; };
-		C81A670E2A7FBEB30021B288 /* Geo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Geo.png; sourceTree = "<group>"; };
-		C81A67132A7FC4540021B288 /* Quantum.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Quantum.png; sourceTree = "<group>"; };
-		C81A67152A7FC5C80021B288 /* imaginary.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = imaginary.png; sourceTree = "<group>"; };
-		C83165422A7D5A15004A4C22 /* PlampyWifi.car */ = {isa = PBXFileReference; lastKnownFileType = file; path = PlampyWifi.car; sourceTree = "<group>"; };
-		C86E3CB62A7CFFF5004A1B56 /* modules.materialrecipe */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = modules.materialrecipe; sourceTree = "<group>"; };
-		C86E3CB72A7CFFF5004A1B56 /* modulesBackground.materialrecipe */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = modulesBackground.materialrecipe; sourceTree = "<group>"; };
-		C89377D02A80BE9800805CAA /* ADTTime.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = ADTTime.ttc; sourceTree = "<group>"; };
-		C89377E62A80C0EF00805CAA /* SFUI.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SFUI.ttf; sourceTree = "<group>"; };
-		C89377FC2A80C2A300805CAA /* image_part_001.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_part_001.png; sourceTree = "<group>"; };
-		C89377FD2A80C2A300805CAA /* image_part_007.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_part_007.png; sourceTree = "<group>"; };
-		C89377FE2A80C2A300805CAA /* image_part_004.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_part_004.png; sourceTree = "<group>"; };
-		C89377FF2A80C2A300805CAA /* image_part_009.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_part_009.png; sourceTree = "<group>"; };
-		C89378002A80C2A300805CAA /* image_part_010.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_part_010.png; sourceTree = "<group>"; };
-		C89378012A80C2A400805CAA /* image_part_002.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_part_002.png; sourceTree = "<group>"; };
-		C89378022A80C2A400805CAA /* image_part_005.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_part_005.png; sourceTree = "<group>"; };
-		C89378032A80C2A400805CAA /* image_part_003.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_part_003.png; sourceTree = "<group>"; };
-		C89378042A80C2A400805CAA /* image_part_008.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_part_008.png; sourceTree = "<group>"; };
-		C89378052A80C2A400805CAA /* image_part_006.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_part_006.png; sourceTree = "<group>"; };
-		C893D1F82A7BB82500643CCC /* ios16.car */ = {isa = PBXFileReference; lastKnownFileType = file; path = ios16.car; sourceTree = "<group>"; };
-		C893D1FB2A7BB82500643CCC /* mainvolume.caml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainvolume.caml; sourceTree = "<group>"; };
-		C893D1FC2A7BB82500643CCC /* mainbluetooth.caml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainbluetooth.caml; sourceTree = "<group>"; };
-		C893D1FE2A7BB82500643CCC /* focusmain.caml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = focusmain.caml; sourceTree = "<group>"; };
-		C893D2002A7BB82500643CCC /* mainbrightness.caml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainbrightness.caml; sourceTree = "<group>"; };
-		C893D2012A7BB82500643CCC /* mainwifi.caml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainwifi.caml; sourceTree = "<group>"; };
-		C893D20C2A7C16E500643CCC /* mainforwardbackward.caml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainforwardbackward.caml; sourceTree = "<group>"; };
-		C893D2102A7C2FB200643CCC /* mainplaypausestop.caml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainplaypausestop.caml; sourceTree = "<group>"; };
+		C81122D32B15FEAF00AD077B /* PersistenceHelper_Embedded */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = PersistenceHelper_Embedded; sourceTree = "<group>"; };
 		C8BB2F302A81674D00C0DB36 /* task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = task.h; sourceTree = "<group>"; };
 		C8BB2F312A81674D00C0DB36 /* proc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = proc.h; sourceTree = "<group>"; };
 		C8BB2F322A81674D00C0DB36 /* uthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uthread.h; sourceTree = "<group>"; };
@@ -145,7 +80,6 @@
 		C8BB2F472A81674D00C0DB36 /* vm_map_entry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vm_map_entry.h; sourceTree = "<group>"; };
 		C8BB2F482A81674D00C0DB36 /* fileproc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fileproc.h; sourceTree = "<group>"; };
 		C8C194802A759CC700ABE8BF /* AAAA.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = AAAA.bin; sourceTree = "<group>"; };
-		C8C43BF72A797848008B08F9 /* lock.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = lock.caf; sourceTree = "<group>"; };
 		C8CB75022A7EA18000305C68 /* thanks_opa334dev_htrowii.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = thanks_opa334dev_htrowii.m; sourceTree = "<group>"; };
 		C8CB75032A7EA18000305C68 /* krw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = krw.h; sourceTree = "<group>"; };
 		C8CB75042A7EA18000305C68 /* grant_full_disk_access.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = grant_full_disk_access.h; sourceTree = "<group>"; };
@@ -217,40 +151,7 @@
 		2948BA6A2A3162C600B2ED3C /* libkfd */ = {
 			isa = PBXGroup;
 			children = (
-				C89377FC2A80C2A300805CAA /* image_part_001.png */,
-				C89378012A80C2A400805CAA /* image_part_002.png */,
-				C89378032A80C2A400805CAA /* image_part_003.png */,
-				C89377FE2A80C2A300805CAA /* image_part_004.png */,
-				C89378022A80C2A400805CAA /* image_part_005.png */,
-				C89378052A80C2A400805CAA /* image_part_006.png */,
-				C89377FD2A80C2A300805CAA /* image_part_007.png */,
-				C89378042A80C2A400805CAA /* image_part_008.png */,
-				C89377FF2A80C2A300805CAA /* image_part_009.png */,
-				C89378002A80C2A300805CAA /* image_part_010.png */,
-				C81A67152A7FC5C80021B288 /* imaginary.png */,
-				C81A67132A7FC4540021B288 /* Quantum.png */,
-				C81A670B2A7FBEB30021B288 /* Dendro.png */,
-				C81A670E2A7FBEB30021B288 /* Geo.png */,
-				C81A670D2A7FBEB30021B288 /* Hydro.png */,
-				C81A670C2A7FBEB30021B288 /* Pyro.png */,
-				C81A67032A7F942B0021B288 /* Anemo.png */,
-				C81A67042A7F942B0021B288 /* Cryo.png */,
-				C81A67052A7F942B0021B288 /* Electro.png */,
-				C81A66FF2A7F814F0021B288 /* passcodetrolley.png */,
-				C89377E62A80C0EF00805CAA /* SFUI.ttf */,
-				C89377D02A80BE9800805CAA /* ADTTime.ttc */,
-				C86E3CB62A7CFFF5004A1B56 /* modules.materialrecipe */,
-				C86E3CB72A7CFFF5004A1B56 /* modulesBackground.materialrecipe */,
-				C893D2102A7C2FB200643CCC /* mainplaypausestop.caml */,
-				C893D20C2A7C16E500643CCC /* mainforwardbackward.caml */,
-				C893D1FB2A7BB82500643CCC /* mainvolume.caml */,
-				C893D1FC2A7BB82500643CCC /* mainbluetooth.caml */,
-				C893D1FE2A7BB82500643CCC /* focusmain.caml */,
-				C893D2002A7BB82500643CCC /* mainbrightness.caml */,
-				C893D2012A7BB82500643CCC /* mainwifi.caml */,
-				C893D1F82A7BB82500643CCC /* ios16.car */,
-				C83165422A7D5A15004A4C22 /* PlampyWifi.car */,
-				C8C43BF72A797848008B08F9 /* lock.caf */,
+				C81122D32B15FEAF00AD077B /* PersistenceHelper_Embedded */,
 				C8C194802A759CC700ABE8BF /* AAAA.bin */,
 				2948BA6E2A3162FD00B2ED3C /* common.h */,
 				2948BA6F2A31630800B2ED3C /* info.h */,
@@ -459,43 +360,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C81A670F2A7FBEB30021B288 /* Dendro.png in Resources */,
-				C89378082A80C2A400805CAA /* image_part_004.png in Resources */,
-				C81A67102A7FBEB30021B288 /* Pyro.png in Resources */,
-				C893780F2A80C2A400805CAA /* image_part_006.png in Resources */,
-				C8C43BF82A797848008B08F9 /* lock.caf in Resources */,
-				C81A67162A7FC5C80021B288 /* imaginary.png in Resources */,
-				C81A67082A7F942B0021B288 /* Electro.png in Resources */,
+				C81122D42B15FEAF00AD077B /* PersistenceHelper_Embedded in Resources */,
 				297BA1112A310AE200D1E51A /* Preview Assets.xcassets in Resources */,
-				C81A67112A7FBEB30021B288 /* Hydro.png in Resources */,
-				C86E3CB82A7CFFF5004A1B56 /* modules.materialrecipe in Resources */,
-				C81A67062A7F942B0021B288 /* Anemo.png in Resources */,
-				C83165432A7D5A15004A4C22 /* PlampyWifi.car in Resources */,
-				C81A67002A7F814F0021B288 /* passcodetrolley.png in Resources */,
-				C89378092A80C2A400805CAA /* image_part_009.png in Resources */,
-				C89377D12A80BE9800805CAA /* ADTTime.ttc in Resources */,
-				C893780C2A80C2A400805CAA /* image_part_005.png in Resources */,
-				C893780A2A80C2A400805CAA /* image_part_010.png in Resources */,
-				C893D2112A7C2FB200643CCC /* mainplaypausestop.caml in Resources */,
-				C893D20D2A7C16E500643CCC /* mainforwardbackward.caml in Resources */,
-				C81A67142A7FC4540021B288 /* Quantum.png in Resources */,
-				C89377E72A80C0EF00805CAA /* SFUI.ttf in Resources */,
-				C893D20A2A7BB82500643CCC /* mainbrightness.caml in Resources */,
-				C893780E2A80C2A400805CAA /* image_part_008.png in Resources */,
 				297BA10D2A310AE200D1E51A /* Assets.xcassets in Resources */,
-				C89378062A80C2A400805CAA /* image_part_001.png in Resources */,
-				C81A67072A7F942B0021B288 /* Cryo.png in Resources */,
-				C893D2082A7BB82500643CCC /* focusmain.caml in Resources */,
-				C893D2062A7BB82500643CCC /* mainbluetooth.caml in Resources */,
-				C893780D2A80C2A400805CAA /* image_part_003.png in Resources */,
-				C893D2052A7BB82500643CCC /* mainvolume.caml in Resources */,
-				C86E3CB92A7CFFF5004A1B56 /* modulesBackground.materialrecipe in Resources */,
-				C893780B2A80C2A400805CAA /* image_part_002.png in Resources */,
-				C893D2032A7BB82500643CCC /* ios16.car in Resources */,
-				C81A67122A7FBEB30021B288 /* Geo.png in Resources */,
 				C8C194812A759CC700ABE8BF /* AAAA.bin in Resources */,
-				C893D20B2A7BB82500643CCC /* mainwifi.caml in Resources */,
-				C89378072A80C2A400805CAA /* image_part_007.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
