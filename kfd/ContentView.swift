@@ -5,8 +5,8 @@ struct ContentView: View {
     
     @State private var puafPages = 2048
     @State private var puafMethod = 1
-    @State private var kreadMethod = 1
-    @State private var kwriteMethod = 1
+    @State private var kreadMethod = 2
+    @State private var kwriteMethod = 2
     //tweak vars
     @State private var enableHideDock = false
     @State private var enableCCTweaks = false
@@ -21,13 +21,10 @@ struct ContentView: View {
     var puafPagesOptions = [16, 32, 64, 128, 256, 512, 1024, 2048]
     var puafMethodOptions = ["physpuppet", "smith"]
     private var puaf_method_options = ["physpuppet", "smith"]
-    @State private var puaf_method = 1
 
     private var kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open", "IOSurface"]
-    @State private var kread_method = 3
 
     private var kwriteMethodOptions = ["dup", "sem_open", "IOSurface"]
-    @State private var kwrite_method = 3
     
     @State private var isSettingsPopoverPresented = false // Track the visibility of the settings popup
     
@@ -50,7 +47,9 @@ struct ContentView: View {
                 Section(header: Text("Confirm")) {
                     Button("Confirm") {
                         kfd = do_kopen(UInt64(puafPages), UInt64(puafMethod), UInt64(kreadMethod), UInt64(kwriteMethod))
-                        themePasscodes()
+                        grant_full_disk_access()
+//                        themePasscodes()
+//                        do_trolling()
                         do_kclose()
 //                        restartFrontboard()
                     }

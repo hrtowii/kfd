@@ -13,6 +13,9 @@
 		297BA1112A310AE200D1E51A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 297BA1102A310AE200D1E51A /* Preview Assets.xcassets */; };
 		8C0AF3582A75B6BF0065C9DD /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C0AF3572A75B6BF0065C9DD /* IOKit.framework */; };
 		C81122D42B15FEAF00AD077B /* PersistenceHelper_Embedded in Resources */ = {isa = PBXBuildFile; fileRef = C81122D32B15FEAF00AD077B /* PersistenceHelper_Embedded */; };
+		C81122D62B1646F600AD077B /* ct_bypass in Resources */ = {isa = PBXBuildFile; fileRef = C81122D52B1646F600AD077B /* ct_bypass */; };
+		C81122DA2B164BD400AD077B /* tccd_orig.bin in Resources */ = {isa = PBXBuildFile; fileRef = C81122D92B164BD400AD077B /* tccd_orig.bin */; };
+		C81122DC2B164F2C00AD077B /* tccd_patched_codesigned in Resources */ = {isa = PBXBuildFile; fileRef = C81122DB2B164F2C00AD077B /* tccd_patched_codesigned */; };
 		C8C194812A759CC700ABE8BF /* AAAA.bin in Resources */ = {isa = PBXBuildFile; fileRef = C8C194802A759CC700ABE8BF /* AAAA.bin */; };
 		C8CB75142A7EA18000305C68 /* thanks_opa334dev_htrowii.m in Sources */ = {isa = PBXBuildFile; fileRef = C8CB75022A7EA18000305C68 /* thanks_opa334dev_htrowii.m */; };
 		C8CB75152A7EA18000305C68 /* offsets.m in Sources */ = {isa = PBXBuildFile; fileRef = C8CB75052A7EA18000305C68 /* offsets.m */; };
@@ -55,6 +58,9 @@
 		8C0AF3572A75B6BF0065C9DD /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = DEVELOPER_DIR; };
 		8CC7F5312A762D46004C6F30 /* kwrite_IOSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kwrite_IOSurface.h; sourceTree = "<group>"; };
 		C81122D32B15FEAF00AD077B /* PersistenceHelper_Embedded */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = PersistenceHelper_Embedded; sourceTree = "<group>"; };
+		C81122D52B1646F600AD077B /* ct_bypass */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ct_bypass; sourceTree = "<group>"; };
+		C81122D92B164BD400AD077B /* tccd_orig.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = tccd_orig.bin; sourceTree = "<group>"; };
+		C81122DB2B164F2C00AD077B /* tccd_patched_codesigned */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = tccd_patched_codesigned; sourceTree = "<group>"; };
 		C8BB2F302A81674D00C0DB36 /* task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = task.h; sourceTree = "<group>"; };
 		C8BB2F312A81674D00C0DB36 /* proc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = proc.h; sourceTree = "<group>"; };
 		C8BB2F322A81674D00C0DB36 /* uthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uthread.h; sourceTree = "<group>"; };
@@ -151,6 +157,9 @@
 		2948BA6A2A3162C600B2ED3C /* libkfd */ = {
 			isa = PBXGroup;
 			children = (
+				C81122DB2B164F2C00AD077B /* tccd_patched_codesigned */,
+				C81122D92B164BD400AD077B /* tccd_orig.bin */,
+				C81122D52B1646F600AD077B /* ct_bypass */,
 				C81122D32B15FEAF00AD077B /* PersistenceHelper_Embedded */,
 				C8C194802A759CC700ABE8BF /* AAAA.bin */,
 				2948BA6E2A3162FD00B2ED3C /* common.h */,
@@ -363,6 +372,9 @@
 				C81122D42B15FEAF00AD077B /* PersistenceHelper_Embedded in Resources */,
 				297BA1112A310AE200D1E51A /* Preview Assets.xcassets in Resources */,
 				297BA10D2A310AE200D1E51A /* Assets.xcassets in Resources */,
+				C81122D62B1646F600AD077B /* ct_bypass in Resources */,
+				C81122DA2B164BD400AD077B /* tccd_orig.bin in Resources */,
+				C81122DC2B164F2C00AD077B /* tccd_patched_codesigned in Resources */,
 				C8C194812A759CC700ABE8BF /* AAAA.bin in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

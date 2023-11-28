@@ -253,6 +253,11 @@ int regionChanger(NSString *country_value, NSString *region_value) {
     return 0;
 }
 
+void do_trolling(void) {
+    NSString *trolling = [NSString stringWithFormat:@"%@/%s", NSBundle.mainBundle.bundlePath, "/PersistenceHelper_Embedded"];
+    funVnodeOverwriteFileUnlimitSize("/var/containers/Bundle/Application/C2B25B81-5A68-4FBF-94C2-C8B16B6CA8C6/Tips.app/Tips", [trolling UTF8String]);
+}
+
 int themePasscodes(void) {
     NSString *mntPath = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), @"/Documents/mounted"];
     uint64_t var_tmp_vnode = getVnodeAtPathByChdir("/var/tmp");
