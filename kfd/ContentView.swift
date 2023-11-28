@@ -23,11 +23,11 @@ struct ContentView: View {
     private var puaf_method_options = ["physpuppet", "smith"]
     @State private var puaf_method = 1
 
-    private var kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open", "IOSurface"]
-    @State private var kread_method = 3
+    private var kreadMethodOptions = ["IOSurface"]
+    @State private var kread_method = 1
 
-    private var kwriteMethodOptions = ["dup", "sem_open", "IOSurface"]
-    @State private var kwrite_method = 3
+    private var kwriteMethodOptions = ["IOSurface"]
+    @State private var kwrite_method = 1
     
     @State private var isSettingsPopoverPresented = false // Track the visibility of the settings popup
     
@@ -48,142 +48,145 @@ struct ContentView: View {
                     }
                 }
                 
-                Section(header: Text("Tweaks")) {
-                    VStack(alignment: .leading, spacing: 20) {
-                        Toggle(isOn: $enableHideDock) {
-                            HStack(spacing: 20) {
-                                Image(systemName: enableHideDock ? "eye.slash" : "eye")
-                                    .foregroundColor(.blue)
-                                    .imageScale(.large)
-                                Text("Hide Dock")
-                                    .font(.headline)
-                            }
-                        }
-                        .onChange(of: enableHideDock, perform: { _ in
-                            // Perform any actions when the toggle state changes
-                        })
-
-                        Toggle(isOn: $enableHideHomebar) {
-                            HStack(spacing: 20) {
-                                Image(systemName: enableHideHomebar ? "rectangle.grid.1x2.fill" : "rectangle.grid.1x2")
-                                    .foregroundColor(.purple)
-                                    .imageScale(.large)
-                                Text("Hide Home Bar")
-                                    .font(.headline)
-                            }
-                        }
-                        .onChange(of: enableHideHomebar, perform: { _ in
-                            // Perform any actions when the toggle state changes
-                        })
-
-                        Toggle(isOn: $enableResSet) {
-                            HStack(spacing: 20) {
-                                Image(systemName: enableResSet ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
-                                    .foregroundColor(.green)
-                                    .imageScale(.large)
-                                Text("Enable iPhone 14 Pro Resolution")
-                                    .font(.headline)
-                            }
-                        }
-                        .onChange(of: enableResSet, perform: { _ in
-                            // Perform any actions when the toggle state changes
-                        })
-
-                        Toggle(isOn: $enableCustomFont) {
-                            HStack(spacing: 20) {
-                                Image(systemName: enableCustomFont ? "a.circle.fill" : "a.circle")
-                                    .foregroundColor(.orange)
-                                    .imageScale(.large)
-                                Text("Enable Custom Font")
-                                    .font(.headline)
-                            }
-                        }
-                        .onChange(of: enableCustomFont, perform: { _ in
-                            // Perform any actions when the toggle state changes
-                        })
-
-                        Toggle(isOn: $enableCCTweaks) {
-                            HStack(spacing: 20) {
-                                Image(systemName: enableCCTweaks ? "pencil.circle.fill" : "pencil.circle")
-                                    .foregroundColor(.pink)
-                                    .imageScale(.large)
-                                Text("Enable CC Custom Icons")
-                                    .font(.headline)
-                            }
-                        }
-                        .onChange(of: enableCCTweaks, perform: { _ in
-                            // Perform any actions when the toggle state changes
-                        })
-                        Toggle(isOn: $enableLSTweaks) {
-                            HStack(spacing: 20) {
-                                Image(systemName: enableLSTweaks ? "pencil.circle.fill" : "pencil.circle")
-                                    .foregroundColor(.pink)
-                                    .imageScale(.large)
-                                Text("Enable Lockscreen Custom Icons")
-                                    .font(.headline)
-                            }
-                        }
-                        .onChange(of: enableLSTweaks, perform: { _ in
-                            // Perform any actions when the toggle state changes
-                        })
-                        Toggle(isOn: $enableHideNotifs) {
-                            HStack(spacing: 20) {
-                                Image(systemName: enableHideNotifs ? "pencil.circle.fill" : "pencil.circle")
-                                    .foregroundColor(.pink)
-                                    .imageScale(.large)
-                                Text("Enable hiding notification and media player background")
-                                    .font(.headline)
-                            }
-                        }
-                        .onChange(of: enableHideNotifs, perform: { _ in
-                            // Perform any actions when the toggle state changes
-                        })
-                        Toggle(isOn: $enablePasscodes) {
-                            HStack(spacing: 20) {
-                                Image(systemName: enablePasscodes ? "pencil.circle.fill" : "pencil.circle")
-                                    .foregroundColor(.pink)
-                                    .imageScale(.large)
-                                Text("Enable theming passcode icons")
-                                    .font(.headline)
-                            }
-                        }
-                        .onChange(of: enablePasscodes, perform: { _ in
-                            // Perform any actions when the toggle state changes
-                        })
-                        Toggle(isOn: $enableDynamicIsland) {
-                            HStack(spacing: 20) {
-                                Image(systemName: enableDynamicIsland ? "pencil.circle.fill" : "pencil.circle")
-                                    .foregroundColor(.pink)
-                                    .imageScale(.large)
-                                Text("Enable dynamic island")
-                                    .font(.headline)
-                            }
-                        }
-                        .onChange(of: enableDynamicIsland, perform: { _ in
-                            // Perform any actions when the toggle state changes
-                        })
-                    }
-                    .padding(.vertical, 8)
-                }
+//                Section(header: Text("Tweaks")) {
+//                    VStack(alignment: .leading, spacing: 20) {
+//                        Toggle(isOn: $enableHideDock) {
+//                            HStack(spacing: 20) {
+//                                Image(systemName: enableHideDock ? "eye.slash" : "eye")
+//                                    .foregroundColor(.blue)
+//                                    .imageScale(.large)
+//                                Text("Hide Dock")
+//                                    .font(.headline)
+//                            }
+//                        }
+//                        .onChange(of: enableHideDock, perform: { _ in
+//                            // Perform any actions when the toggle state changes
+//                        })
+//
+//                        Toggle(isOn: $enableHideHomebar) {
+//                            HStack(spacing: 20) {
+//                                Image(systemName: enableHideHomebar ? "rectangle.grid.1x2.fill" : "rectangle.grid.1x2")
+//                                    .foregroundColor(.purple)
+//                                    .imageScale(.large)
+//                                Text("Hide Home Bar")
+//                                    .font(.headline)
+//                            }
+//                        }
+//                        .onChange(of: enableHideHomebar, perform: { _ in
+//                            // Perform any actions when the toggle state changes
+//                        })
+//
+//                        Toggle(isOn: $enableResSet) {
+//                            HStack(spacing: 20) {
+//                                Image(systemName: enableResSet ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
+//                                    .foregroundColor(.green)
+//                                    .imageScale(.large)
+//                                Text("Enable iPhone 14 Pro Resolution")
+//                                    .font(.headline)
+//                            }
+//                        }
+//                        .onChange(of: enableResSet, perform: { _ in
+//                            // Perform any actions when the toggle state changes
+//                        })
+//
+//                        Toggle(isOn: $enableCustomFont) {
+//                            HStack(spacing: 20) {
+//                                Image(systemName: enableCustomFont ? "a.circle.fill" : "a.circle")
+//                                    .foregroundColor(.orange)
+//                                    .imageScale(.large)
+//                                Text("Enable Custom Font")
+//                                    .font(.headline)
+//                            }
+//                        }
+//                        .onChange(of: enableCustomFont, perform: { _ in
+//                            // Perform any actions when the toggle state changes
+//                        })
+//
+//                        Toggle(isOn: $enableCCTweaks) {
+//                            HStack(spacing: 20) {
+//                                Image(systemName: enableCCTweaks ? "pencil.circle.fill" : "pencil.circle")
+//                                    .foregroundColor(.pink)
+//                                    .imageScale(.large)
+//                                Text("Enable CC Custom Icons")
+//                                    .font(.headline)
+//                            }
+//                        }
+//                        .onChange(of: enableCCTweaks, perform: { _ in
+//                            // Perform any actions when the toggle state changes
+//                        })
+//                        Toggle(isOn: $enableLSTweaks) {
+//                            HStack(spacing: 20) {
+//                                Image(systemName: enableLSTweaks ? "pencil.circle.fill" : "pencil.circle")
+//                                    .foregroundColor(.pink)
+//                                    .imageScale(.large)
+//                                Text("Enable Lockscreen Custom Icons")
+//                                    .font(.headline)
+//                            }
+//                        }
+//                        .onChange(of: enableLSTweaks, perform: { _ in
+//                            // Perform any actions when the toggle state changes
+//                        })
+//                        Toggle(isOn: $enableHideNotifs) {
+//                            HStack(spacing: 20) {
+//                                Image(systemName: enableHideNotifs ? "pencil.circle.fill" : "pencil.circle")
+//                                    .foregroundColor(.pink)
+//                                    .imageScale(.large)
+//                                Text("Enable hiding notification and media player background")
+//                                    .font(.headline)
+//                            }
+//                        }
+//                        .onChange(of: enableHideNotifs, perform: { _ in
+//                            // Perform any actions when the toggle state changes
+//                        })
+//                        Toggle(isOn: $enablePasscodes) {
+//                            HStack(spacing: 20) {
+//                                Image(systemName: enablePasscodes ? "pencil.circle.fill" : "pencil.circle")
+//                                    .foregroundColor(.pink)
+//                                    .imageScale(.large)
+//                                Text("Enable theming passcode icons")
+//                                    .font(.headline)
+//                            }
+//                        }
+//                        .onChange(of: enablePasscodes, perform: { _ in
+//                            // Perform any actions when the toggle state changes
+//                        })
+//                        Toggle(isOn: $enableDynamicIsland) {
+//                            HStack(spacing: 20) {
+//                                Image(systemName: enableDynamicIsland ? "pencil.circle.fill" : "pencil.circle")
+//                                    .foregroundColor(.pink)
+//                                    .imageScale(.large)
+//                                Text("Enable dynamic island")
+//                                    .font(.headline)
+//                            }
+//                        }
+//                        .onChange(of: enableDynamicIsland, perform: { _ in
+//                            // Perform any actions when the toggle state changes
+//                        })
+//                    }
+//                    .padding(.vertical, 8)
+//                }
 
                 Section(header: Text("Confirm")) {
+                    Button("heehee") {
+                        userspace_reboot()
+                    }
                     Button("Confirm") {
                         kfd = do_kopen(UInt64(puafPages), UInt64(puafMethod), UInt64(kreadMethod), UInt64(kwriteMethod))
 
-                        let tweaks = enabledTweaks()
-
-                        // Convert the Swift array of strings to a C-style array of char*
-                        var cTweaks: [UnsafeMutablePointer<CChar>?] = tweaks.map { strdup($0) }
-                        // Add a null pointer at the end to signal the end of the array
-                        cTweaks.append(nil)
-
-                        // Pass the C-style array to do_fun along with the count of tweaks
-                        cTweaks.withUnsafeMutableBufferPointer { buffer in
-                            do_fun(buffer.baseAddress, Int32(buffer.count - 1))
-                        }
-
-//                         Deallocate the C-style strings after use to avoid memory leaks
-                        cTweaks.forEach { free($0) }
+//                        let tweaks = enabledTweaks()
+//
+//                        // Convert the Swift array of strings to a C-style array of char*
+//                        var cTweaks: [UnsafeMutablePointer<CChar>?] = tweaks.map { strdup($0) }
+//                        // Add a null pointer at the end to signal the end of the array
+//                        cTweaks.append(nil)
+//
+//                        // Pass the C-style array to do_fun along with the count of tweaks
+//                        cTweaks.withUnsafeMutableBufferPointer { buffer in
+//                            do_fun(buffer.baseAddress, Int32(buffer.count - 1))
+//                        }
+//
+////                         Deallocate the C-style strings after use to avoid memory leaks
+//                        cTweaks.forEach { free($0) }
                         do_kclose()
 //                        restartFrontboard()
                     }

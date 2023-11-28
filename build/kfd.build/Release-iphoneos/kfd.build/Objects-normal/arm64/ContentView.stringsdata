@@ -1,0 +1,64 @@
+{
+  "source": "/Users/ibarahime/kfdgithub/kfd/kfd/ContentView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "kfdtweaks"
+      },
+      {
+        "comment": "",
+        "key": "Status"
+      },
+      {
+        "comment": "",
+        "key": "Confirm"
+      },
+      {
+        "comment": "",
+        "key": "Success!"
+      },
+      {
+        "comment": "",
+        "key": "Tap umbrella to respring <3"
+      },
+      {
+        "comment": "",
+        "key": "heehee"
+      },
+      {
+        "comment": "",
+        "key": "stage2"
+      },
+      {
+        "comment": "",
+        "key": "Payload Settings"
+      },
+      {
+        "comment": "",
+        "key": "Kernel Settings"
+      },
+      {
+        "comment": "",
+        "key": "Apply Settings"
+      },
+      {
+        "comment": "",
+        "key": "puaf pages:"
+      },
+      {
+        "comment": "",
+        "key": "puaf method:"
+      },
+      {
+        "comment": "",
+        "key": "kread method:"
+      },
+      {
+        "comment": "",
+        "key": "kwrite method:"
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,8 @@
+version: "Apple Swift version 5.9 (swiftlang-5.9.0.128.108 clang-1500.0.40.1)"
+options: "32ee3f82987553e61942d98a7315676c6d41bf9879d3988a1ff38d4451a8a0a2"
+build_start_time: [1701168159, 551150000]
+build_end_time: [1701168161, 654782000]
+inputs:
+  "/Users/ibarahime/kfdgithub/kfd/build/kfd.build/Release-iphoneos/kfd.build/DerivedSources/GeneratedAssetSymbols.swift": [1701168159, 396645451]
+  "/Users/ibarahime/kfdgithub/kfd/kfd/ContentView.swift": [1701168122, 280244354]
+  "/Users/ibarahime/kfdgithub/kfd/kfd/kfdApp.swift": [1691429888, 455352286]

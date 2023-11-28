@@ -1,0 +1,9 @@
+"/Users/ibarahime/kfdgithub/kfd/kfd/ContentView.swift":
+  dependencies: "/Users/ibarahime/kfdgithub/kfd/build/kfd.build/Release-iphoneos/kfd.build/Objects-normal/arm64/kfd-master.d"
+  const-values: "/Users/ibarahime/kfdgithub/kfd/build/kfd.build/Release-iphoneos/kfd.build/Objects-normal/arm64/kfd-master.swiftconstvalues"
+  swiftmodule: "/Users/ibarahime/kfdgithub/kfd/build/kfd.build/Release-iphoneos/kfd.build/Objects-normal/arm64/kfd.swiftmodule"
+  swiftdoc: "/Users/ibarahime/kfdgithub/kfd/build/kfd.build/Release-iphoneos/kfd.build/Objects-normal/arm64/kfd.swiftdoc"
+  diagnostics: "/Users/ibarahime/kfdgithub/kfd/build/kfd.build/Release-iphoneos/kfd.build/Objects-normal/arm64/kfd-master.dia"
+  swiftsourceinfo: "/Users/ibarahime/kfdgithub/kfd/build/kfd.build/Release-iphoneos/kfd.build/Objects-normal/arm64/kfd.swiftsourceinfo"
+  abi-baseline-json: "/Users/ibarahime/kfdgithub/kfd/build/kfd.build/Release-iphoneos/kfd.build/Objects-normal/arm64/kfd.abi.json"
+  objc-header: "/Users/ibarahime/kfdgithub/kfd/build/kfd.build/Release-iphoneos/kfd.build/Objects-normal/arm64/kfd-Swift.h"

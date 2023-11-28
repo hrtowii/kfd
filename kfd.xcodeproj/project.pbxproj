@@ -56,7 +56,6 @@
 		C8CB751A2A7EA18000305C68 /* krw.c in Sources */ = {isa = PBXBuildFile; fileRef = C8CB75102A7EA18000305C68 /* krw.c */; };
 		C8CB751B2A7EA18000305C68 /* grant_full_disk_access.m in Sources */ = {isa = PBXBuildFile; fileRef = C8CB75112A7EA18000305C68 /* grant_full_disk_access.m */; };
 		C8CB751C2A7EA18000305C68 /* proc.c in Sources */ = {isa = PBXBuildFile; fileRef = C8CB75132A7EA18000305C68 /* proc.c */; };
-		C8EAC7D02A769098005FB878 /* SwiftUtils in Frameworks */ = {isa = PBXBuildFile; productRef = C8843C222A724AA900CA0DC9 /* SwiftUtils */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -87,6 +86,7 @@
 		8C0AF3542A75B6340065C9DD /* intermediate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = intermediate.m; sourceTree = "<group>"; };
 		8C0AF3572A75B6BF0065C9DD /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = DEVELOPER_DIR; };
 		8CC7F5312A762D46004C6F30 /* kwrite_IOSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kwrite_IOSurface.h; sourceTree = "<group>"; };
+		C81122902B15E37E00AD077B /* trolling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = trolling.h; sourceTree = "<group>"; };
 		C81A66FF2A7F814F0021B288 /* passcodetrolley.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = passcodetrolley.png; sourceTree = "<group>"; };
 		C81A67032A7F942B0021B288 /* Anemo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Anemo.png; sourceTree = "<group>"; };
 		C81A67042A7F942B0021B288 /* Cryo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Cryo.png; sourceTree = "<group>"; };
@@ -171,7 +171,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C8EAC7D02A769098005FB878 /* SwiftUtils in Frameworks */,
 				8C0AF3582A75B6BF0065C9DD /* IOKit.framework in Frameworks */,
 				8C0AF3582A75B6BF0065C9DD /* IOKit.framework in Frameworks */,
 			);
@@ -210,6 +209,7 @@
 				C8CB750B2A7EA18000305C68 /* utils.m */,
 				C8CB750C2A7EA18000305C68 /* vnode.h */,
 				C8CB750E2A7EA18000305C68 /* vnode.m */,
+				C81122902B15E37E00AD077B /* trolling.h */,
 			);
 			path = fun;
 			sourceTree = "<group>";
@@ -411,7 +411,6 @@
 			);
 			name = kfd;
 			packageProductDependencies = (
-				C8843C222A724AA900CA0DC9 /* SwiftUtils */,
 			);
 			productName = kfd;
 			productReference = 297BA1052A310AE100D1E51A /* kfd.app */;
@@ -443,7 +442,6 @@
 			);
 			mainGroup = 297BA0FC2A310AE100D1E51A;
 			packageReferences = (
-				C8843C212A724AA900CA0DC9 /* XCRemoteSwiftPackageReference "SwiftUtils" */,
 			);
 			productRefGroup = 297BA1062A310AE100D1E51A /* Products */;
 			projectDirPath = "";
@@ -639,11 +637,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = kfd/kfd.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"kfd/Preview Content\"";
 				DEVELOPMENT_TEAM = F6N37NLTF9;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -664,6 +663,7 @@
 				OTHER_CFLAGS = "-Os";
 				PRODUCT_BUNDLE_IDENTIFIER = com.htrowii.kfdforktest.fuckxcode;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -683,11 +683,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = kfd/kfd.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"kfd/Preview Content\"";
 				DEVELOPMENT_TEAM = F6N37NLTF9;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -707,6 +708,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.htrowii.kfdforktest.fuckxcode;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -740,25 +742,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		C8843C212A724AA900CA0DC9 /* XCRemoteSwiftPackageReference "SwiftUtils" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pinauten/SwiftUtils";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		C8843C222A724AA900CA0DC9 /* SwiftUtils */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C8843C212A724AA900CA0DC9 /* XCRemoteSwiftPackageReference "SwiftUtils" */;
-			productName = SwiftUtils;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 297BA0FD2A310AE100D1E51A /* Project object */;
 }
